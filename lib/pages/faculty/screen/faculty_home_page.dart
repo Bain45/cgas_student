@@ -170,7 +170,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           ),
           elevation: 5,
           margin: const EdgeInsets.all(9),
-          color: const Color.fromARGB(255, 170, 209, 236),
+          color: const Color.fromARGB(255, 16, 243, 255),
           child: ListTile(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(22.0),
@@ -202,7 +202,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   ),
                 );
               },
-              child: const Text('View', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('View', style: TextStyle(color: Color.fromARGB(255, 158, 243, 238), fontWeight: FontWeight.bold)),
             ),
           ),
         );
@@ -218,15 +218,15 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       itemCount: pastRecords.length,
       itemBuilder: (context, index) {
         return Card(
-          margin: const EdgeInsets.all(9),
-          color: const Color.fromARGB(255, 23, 117, 194),
+          margin: const EdgeInsets.all(8),
+          color: const Color.fromARGB(255, 25, 251, 251),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22.0),
+            borderRadius: BorderRadius.circular(14.0),
           ),
-          elevation: 10,
+          elevation: 5,
           child: ListTile(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
+              borderRadius: BorderRadius.circular(22.0),
             ),
             tileColor: const Color.fromARGB(255, 149, 218, 239),
             title: Text(
