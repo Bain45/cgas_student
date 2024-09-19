@@ -6,18 +6,8 @@ class StudentHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      backgroundColor: const Color.fromARGB(255, 4, 20, 44),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.blue[900]!, // Dark Blue
-              Colors.blue[300]!, // Light Blue
-            ],
-          ),
-        ),
         child: 
             Column(
               children: [
@@ -34,10 +24,10 @@ class StudentHomePage extends StatelessWidget {
                         },
                       ),
                       const Text(
-                        'CGAS',
+                        'Abin M Biju',
                         style: TextStyle(
                           color: Color.fromARGB(255, 255, 255, 255),
-                          fontSize: 35,
+                          fontSize: 22,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold,
                         ),
@@ -60,8 +50,8 @@ class StudentHomePage extends StatelessWidget {
                       crossAxisSpacing: 12.0,
                       mainAxisSpacing: 12.0,
                       children: [
-                        _buildCard(context, Icons.arrow_circle_down, 'INPASS', '/inpass', const Color.fromARGB(120, 33, 115, 231), const Color.fromARGB(255, 255, 255, 255)),
-                        _buildCard(context, Icons.arrow_circle_up, 'OUTPASS', '/outpass', const Color.fromARGB(120, 33, 115, 231), const Color.fromARGB(255, 255, 255, 255)),
+                        _buildCard(context, Icons.arrow_circle_down, 'INPASS', '/inpass', const Color.fromARGB(255, 163, 234, 255), const Color.fromARGB(255, 4, 20, 44)),
+                        _buildCard(context, Icons.arrow_circle_up, 'OUTPASS', '/outpass', const Color.fromARGB(255, 163, 234, 255), const Color.fromARGB(255, 4, 20, 44)),
                       ],
                     ),
                   ),
@@ -91,16 +81,16 @@ class StudentHomePage extends StatelessWidget {
                     Navigator.pushNamed(context, '/tokens'); // Navigate to the tokens page
                   },
                   child: Container(
-                    color: const Color.fromARGB(159, 33, 116, 231), // Background color of the container
+                    color: const Color.fromARGB(255, 163, 234, 255), // Background color of the container
                     padding: const EdgeInsets.all(16.0), // Padding inside the container
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.qr_code_2, color: Color.fromARGB(255, 247, 247, 247), size: 30.0), // Token icon
+                        Icon(Icons.qr_code_2, color: Color.fromARGB(255, 4, 20, 44), size: 30.0), // Token icon
                         SizedBox(width: 10.0), // Spacing between icon and text
                         Text(
                           'Tokens',
-                          style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 4, 20, 44), fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -158,7 +148,7 @@ class StudentHomePage extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(221, 255, 255, 255),
+                color: Color.fromARGB(221, 0, 0, 0),
               ),
             ),
           ],
@@ -171,7 +161,7 @@ class StudentHomePage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin around each item
       decoration: BoxDecoration(
-        color: const Color.fromARGB(120, 88, 149, 235), // Background color of the container
+        color: const Color.fromARGB(255, 163, 234, 255), // Background color of the container
         borderRadius: BorderRadius.circular(8.0), // Rounded corners
         border: Border.all(
           color: Colors.grey[300]!, // Border color
