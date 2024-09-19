@@ -30,8 +30,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color.fromARGB(255, 5, 54, 127),
-                    Color.fromARGB(255, 2, 37, 77),
+                    Color.fromARGB(255, 4, 20, 44),
+                    Color.fromARGB(255, 4, 20, 44),
                   ],
                 ),
               ),
@@ -47,8 +47,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             _currentIndex = index;
           });
         },
-        backgroundColor: const Color.fromARGB(255, 2, 37, 77),
-        selectedItemColor: const Color.fromARGB(255, 111, 214, 255),
+        backgroundColor: const Color.fromARGB(255, 3, 21, 41),
+        selectedItemColor: const Color.fromARGB(255, 124, 213, 249),
         unselectedItemColor: const Color.fromARGB(255, 244, 244, 244),
         selectedFontSize: 15,
         items: const [
@@ -69,7 +69,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   Widget _buildProfileHeader() {
     return Container(
       padding: const EdgeInsets.all(35.66),
-      color: const Color.fromARGB(255, 5, 54, 127),
+      color: const Color.fromARGB(255, 3, 21, 41),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -121,7 +121,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
               borderRadius: BorderRadius.circular(30.0),
             ),
             child: IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white),
+              icon: const Icon(Icons.logout, size: 26, color: Color.fromARGB(255, 8, 14, 85)),
               onPressed: () {
                 _showLogoutConfirmationDialog(context);
               },
@@ -170,12 +170,12 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           ),
           elevation: 5,
           margin: const EdgeInsets.all(9),
-          color: const Color.fromARGB(255, 16, 150, 246),
+          color: const Color.fromARGB(255, 170, 209, 236),
           child: ListTile(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(22.0),
             ),
-            tileColor: const Color.fromARGB(255, 149, 218, 239),
+            tileColor: const Color.fromARGB(255, 163, 234, 255),
             title: Text(
               students[index]["name"]!,
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -228,7 +228,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15.0),
             ),
-            tileColor: const Color.fromARGB(255, 136, 223, 255),
+            tileColor: const Color.fromARGB(255, 149, 218, 239),
             title: Text(
               pastRecords[index],
               style: const TextStyle(fontWeight: FontWeight.bold),
