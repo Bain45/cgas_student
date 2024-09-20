@@ -6,9 +6,12 @@ class TokensPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 4, 20, 44),
       appBar: AppBar(
-        title: const Text('Concurrent Tokens'),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text('Concurrent Tokens',style: TextStyle(color: Colors.white
+        ),),
+        backgroundColor: const Color.fromARGB(255, 4, 20, 44),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -25,6 +28,7 @@ class TokensPage extends StatelessWidget {
 
   Widget _buildTokenItem(String tokenNumber, String validity) {
     return Card(
+      color: const Color.fromARGB(255, 163, 234, 255),
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),

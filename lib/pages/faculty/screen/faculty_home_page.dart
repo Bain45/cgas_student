@@ -30,8 +30,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color.fromARGB(255, 4, 20, 44),
-                    Color.fromARGB(255, 4, 20, 44),
+                    Color.fromARGB(255, 3, 18, 40),
+                    Color.fromARGB(255, 6, 24, 45),
                   ],
                 ),
               ),
@@ -49,8 +49,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         },
         backgroundColor: const Color.fromARGB(255, 3, 21, 41),
         selectedItemColor: const Color.fromARGB(255, 124, 213, 249),
-        unselectedItemColor: const Color.fromARGB(255, 244, 244, 244),
-        selectedFontSize: 15,
+        unselectedItemColor: Colors.white70,
+        selectedFontSize: 16,
+        unselectedFontSize: 14,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.approval),
@@ -68,7 +69,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   // Method to build the profile header
   Widget _buildProfileHeader() {
     return Container(
-      padding: const EdgeInsets.all(35.66),
+      padding: const EdgeInsets.all(24),
       color: const Color.fromARGB(255, 3, 21, 41),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,12 +80,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                 radius: 30.0,
                 backgroundImage: AssetImage('assets/images/profilephoto.jpg'),
               ),
-              const SizedBox(width: 10.0),
-              // Profile details
+              const SizedBox(width: 12),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name button
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -98,17 +97,16 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       'Farisa Mol',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18.0,
+                        fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  // Faculty text
                   const Text(
                     'Faculty',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: 14.0,
+                      color: Colors.white70,
+                      fontSize: 16.0,
                     ),
                   ),
                 ],
@@ -118,10 +116,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           Container(
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 149, 218, 239),
-              borderRadius: BorderRadius.circular(30.0),
+              borderRadius: BorderRadius.circular(18.0),
             ),
             child: IconButton(
-              icon: const Icon(Icons.logout, size: 26, color: Color.fromARGB(255, 8, 14, 85)),
+              icon: const Icon(Icons.logout, size: 25, color: Color.fromARGB(255, 8, 14, 85)),
               onPressed: () {
                 _showLogoutConfirmationDialog(context);
               },
@@ -161,52 +159,80 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   }
 
   Widget _studentApprovalList() {
-    return ListView.builder(
-      itemCount: students.length,
-      itemBuilder: (context, index) {
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0, left: 16.0),
+          child: const Text(
+            'Approval List',
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-          elevation: 5,
-          margin: const EdgeInsets.all(9),
-          color: const Color.fromARGB(255, 16, 243, 255),
-          child: ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(22.0),
-            ),
-            tileColor: const Color.fromARGB(255, 163, 234, 255),
-            title: Text(
-              students[index]["name"]!,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              "Reg No: ${students[index]["id"]}",
-              style: const TextStyle(color: Colors.black),
-            ),
-            trailing: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 28, 46, 99),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: ListView.builder(
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              return Card(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => StudentToken(
-                      studentName: students[index]["name"]!,
-                      studentId: students[index]["id"]!,
+                elevation: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  tileColor: const Color.fromARGB(255, 149, 218, 239),
+                  title: Text(
+                    students[index]["name"]!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                      color: Colors.black87,
                     ),
                   ),
-                );
-              },
-              child: const Text('View', style: TextStyle(color: Color.fromARGB(255, 158, 243, 238), fontWeight: FontWeight.bold)),
-            ),
+                  subtitle: Text(
+                    "Reg No: ${students[index]["id"]}",
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                  trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 28, 46, 99),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StudentToken(
+                            studentName: students[index]["name"]!,
+                            studentId: students[index]["id"]!,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'View',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 
@@ -218,20 +244,23 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       itemCount: pastRecords.length,
       itemBuilder: (context, index) {
         return Card(
-          margin: const EdgeInsets.all(8),
-          color: const Color.fromARGB(255, 25, 251, 251),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14.0),
+            borderRadius: BorderRadius.circular(15.0),
           ),
-          elevation: 5,
+          elevation: 6,
+          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: ListTile(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(22.0),
+              borderRadius: BorderRadius.circular(15.0),
             ),
-            tileColor: const Color.fromARGB(255, 149, 218, 239),
+            tileColor: const Color.fromARGB(255, 124, 213, 249),
             title: Text(
               pastRecords[index],
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.0,
+                color: Colors.black87,
+              ),
             ),
           ),
         );

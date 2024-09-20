@@ -18,22 +18,45 @@ class StudentHomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.account_circle_rounded, color: Color.fromARGB(255, 255, 255, 255), size: 40.0),
+                        icon: const Icon(Icons.account_circle_rounded, color: Color.fromARGB(255, 255, 255, 255), size: 30.0),
                         onPressed: () {
                           Navigator.pushNamed(context, '/myprofile');
                         },
                       ),
-                      const Text(
-                        'Abin M Biju',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontSize: 22,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                       Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'CGAS',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              children: const [
+                Text(
+                  'Welcome, ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  'Abin M Biju',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
                       IconButton(
-                        icon: const Icon(Icons.exit_to_app_sharp, color: Color.fromARGB(255, 255, 255, 255), size: 35.0),
+                        icon: const Icon(Icons.exit_to_app_sharp, color: Color.fromARGB(255, 255, 255, 255), size: 30.0),
                         onPressed: () {
                           _showLogoutConfirmationDialog(context); // Call the method to show the dialog
                         },
@@ -61,12 +84,12 @@ class StudentHomePage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Adjust vertical padding to move it higher
                   child: Text(
                     'History',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Colors.white),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color:Colors.white),
                   ),
                 ),
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Adjust padding for history items
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0), // Adjust padding for history items
                     children: [
                       _buildHistoryItem('Inpass Request - 01/08/2024', 'Approved'),
                       _buildHistoryItem('Outpass Request - 05/08/2024', 'Pending'),

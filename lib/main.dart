@@ -1,7 +1,7 @@
 
 // import 'package:cgas_student/pages/hod/screen/hod_home_page.dart';
-//import 'package:cgas_student/pages/faculty/screen/faculty_home_page.dart';
-import 'package:cgas_student/pages/student/screen/student_home_page.dart';
+import 'package:cgas_student/pages/faculty/screen/faculty_home_page.dart';
+//import 'package:cgas_student/pages/student/screen/student_home_page.dart';
 import 'package:flutter/material.dart';
 //import 'pages/student/screen/student_home_page.dart';
 // import 'pages/security/screen/qr_code_scanner.dart';
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: StudentHomePage(), // Set StudentHomePage as the default route
+      home: FacultyHomePage(), // Set StudentHomePage as the default route
       routes: {
         '/myprofile': (context) => const MyProfilePage(),
         '/inpass': (context) => const InpassPage(),

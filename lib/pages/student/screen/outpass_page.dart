@@ -77,24 +77,17 @@ class _OutpassPageState extends State<OutpassPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 4, 20, 44),
       appBar: AppBar(
-        title: const Text('Outpass Request'),
-        backgroundColor: const Color.fromARGB(255, 65, 127, 242),
+        title: const Text('Outpass Request',style: TextStyle(color: Colors.white),),
+        backgroundColor: const Color.fromARGB(255, 4, 20, 44),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
-          // Background image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/background.jpg"), // Path to your background image
-                fit: BoxFit.cover, // Make the image cover the entire screen
-              ),
-            ),
-          ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -103,11 +96,11 @@ class _OutpassPageState extends State<OutpassPage> {
                     Container(
                       padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(2255, 119, 194, 255).withOpacity(0.9),
+                        color: const Color.fromARGB(255, 163, 234, 255),
                         borderRadius: BorderRadius.circular(15.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black,
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -140,11 +133,11 @@ class _OutpassPageState extends State<OutpassPage> {
                     Container(
                       padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 119, 194, 255).withOpacity(0.9),
+                        color: const Color.fromARGB(255, 163, 234, 255),
                         borderRadius: BorderRadius.circular(15.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.white.withOpacity(.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -177,7 +170,7 @@ class _OutpassPageState extends State<OutpassPage> {
                     Container(
                       padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 119, 194, 255).withOpacity(0.9),
+                        color: const Color.fromARGB(255, 163, 234, 255),
                         borderRadius: BorderRadius.circular(15.0),
                         boxShadow: [
                           BoxShadow(
@@ -218,7 +211,7 @@ class _OutpassPageState extends State<OutpassPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            const Color.fromARGB(255, 116, 196, 246),
+                            const Color.fromARGB(255, 163, 234, 255),
                         padding: const EdgeInsets.symmetric(
                             vertical: 15, horizontal: 30),
                         textStyle: const TextStyle(
@@ -226,7 +219,7 @@ class _OutpassPageState extends State<OutpassPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                       ),
-                      child: const Text('Submit'),
+                      child: const Text('Submit',style: TextStyle(color: Color.fromARGB(255, 3, 21, 41),fontWeight: FontWeight.bold),),
                     ),
                   ],
                 ),
