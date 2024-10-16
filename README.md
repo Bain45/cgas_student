@@ -1,3 +1,3 @@
-# cgas_student
+# cgas_official
 
 A new Flutter project.

@@ -1,30 +1,25 @@
-
-// import 'package:cgas_student/pages/hod/screen/hod_home_page.dart';
-import 'package:cgas_student/pages/faculty/screen/faculty_home_page.dart';
+import 'package:cgas_official/firebase_options.dart';
+import 'package:cgas_official/onboarding/forgot_pass.dart';
+import 'package:cgas_official/onboarding/login_page.dart';
+import 'package:cgas_official/pages/faculty/screen/faculty_home_page.dart';
+import 'package:cgas_official/pages/student/screen/history_page.dart';
+import 'package:cgas_official/pages/student/screen/inpass_page.dart';
+import 'package:cgas_official/pages/student/screen/my_profile_page.dart';
+import 'package:cgas_official/pages/student/screen/outpass_page.dart';
+import 'package:cgas_official/pages/student/screen/tokens_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:cgas_student/pages/student/screen/student_home_page.dart';
 import 'package:flutter/material.dart';
-//import 'pages/student/screen/student_home_page.dart';
-// import 'pages/security/screen/qr_code_scanner.dart';
-import 'pages/student/screen/my_profile_page.dart';
-import 'onboarding/login_page.dart';
-import 'pages/student/screen/inpass_page.dart';
-import 'pages/student/screen/outpass_page.dart';
-import 'pages/student/screen/history_page.dart';
-import 'pages/student/screen/tokens_page.dart';
-import 'onboarding/forgot_pass.dart'; // Ensure the import for ForgotPasswordPage
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
 );
-  runApp(const MyApp());
+  runApp(const MainApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {

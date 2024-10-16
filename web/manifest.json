@@ -1,6 +1,6 @@
 {
-    "name": "cgas_student",
-    "short_name": "cgas_student",
+    "name": "cgas_official",
+    "short_name": "cgas_official",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
