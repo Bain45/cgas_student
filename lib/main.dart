@@ -1,6 +1,7 @@
 
 // import 'package:cgas_student/pages/hod/screen/hod_home_page.dart';
 import 'package:cgas_student/pages/faculty/screen/faculty_home_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 //import 'package:cgas_student/pages/student/screen/student_home_page.dart';
 import 'package:flutter/material.dart';
 //import 'pages/student/screen/student_home_page.dart';
@@ -12,8 +13,13 @@ import 'pages/student/screen/outpass_page.dart';
 import 'pages/student/screen/history_page.dart';
 import 'pages/student/screen/tokens_page.dart';
 import 'onboarding/forgot_pass.dart'; // Ensure the import for ForgotPasswordPage
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   runApp(const MyApp());
 }
 
@@ -35,7 +41,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: FacultyHomePage(), // Set StudentHomePage as the default route
+      home: const FacultyHomePage(), // Set StudentHomePage as the default route
       routes: {
         '/myprofile': (context) => const MyProfilePage(),
         '/inpass': (context) => const InpassPage(),
