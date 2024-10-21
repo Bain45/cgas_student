@@ -25,7 +25,7 @@ class StudentToken extends StatelessWidget {
             SizedBox(height: 50.0),  // Add some top padding
             CircleAvatar(
               radius: 50.0,
-              backgroundImage: AssetImage('assets/images/profilephoto.jpg'),  // Placeholder photo
+              backgroundImage: AssetImage('assets/profilephoto.jpg'),  // Placeholder photo
             ),
             const SizedBox(height: 16.0),
             Text(

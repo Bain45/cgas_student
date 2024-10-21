@@ -1,7 +1,8 @@
 import 'package:cgas_official/firebase_options.dart';
 import 'package:cgas_official/onboarding/forgot_pass.dart';
 import 'package:cgas_official/onboarding/login_page.dart';
-import 'package:cgas_official/pages/faculty/screen/faculty_home_page.dart';
+//import 'package:cgas_official/pages/faculty/screen/faculty_home_page.dart';
+//import 'package:cgas_official/pages/student/screen/student_home_page.dart';
 import 'package:cgas_official/pages/student/screen/history_page.dart';
 import 'package:cgas_official/pages/student/screen/inpass_page.dart';
 import 'package:cgas_official/pages/student/screen/my_profile_page.dart';
@@ -27,7 +28,6 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Student Homepage',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         cardTheme: CardTheme(
           elevation: 8.0,
@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const FacultyHomePage(), // Set StudentHomePage as the default route
+      home: const LoginPage(), // Set StudentHomePage as the default route
       routes: {
         '/myprofile': (context) => const MyProfilePage(),
         '/inpass': (context) => const InpassPage(),

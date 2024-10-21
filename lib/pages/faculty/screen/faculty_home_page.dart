@@ -1,6 +1,9 @@
+import 'package:cgas_official/pages/faculty/screen/student_add.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'student_token.dart';  // Import the student_token page
-import 'faculty_profile_page.dart';  // Import the faculty_profile_page
+import 'student_token.dart'; // Import the student_token page
+import 'faculty_profile_page.dart'; // Import the faculty_profile_page
 
 class FacultyHomePage extends StatefulWidget {
   const FacultyHomePage({super.key});
@@ -12,6 +15,47 @@ class FacultyHomePage extends StatefulWidget {
 class _FacultyHomePageState extends State<FacultyHomePage> {
   int _currentIndex = 0;
 
+  String name = 'Loading...';
+  String image = '';
+
+  final user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    print("User is not logged in.");
+    return;
+  }
+  final userId = user.uid;  // User ID is now non-null
+  final firestore = FirebaseFirestore.instance;
+
+  try {
+    DocumentSnapshot hodDoc = await firestore.collection('hod').doc(userId).get();
+
+    if (hodDoc.exists) {
+      final data = hodDoc.data() as Map<String, dynamic>?;
+
+      if (data != null) {
+        setState(() {
+          name = data['name'] ?? "No Name Available";  // Default value for 'name'
+          image = data['imageUrl'] ?? "";  // Default value for 'imageUrl'
+        });
+      }
+    } else {
+      print("No document found for this user.");
+    }
+  } catch (e) {
+    print("Error Fetching Data: $e");
+  }
+}
+
+
   // Sample data for students (only John Doe for this example)
   List<Map<String, String>> students = [
     {"name": "John Doe", "id": "ICE23MCA-2001"},
@@ -22,7 +66,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     return Scaffold(
       body: Column(
         children: [
-          _buildProfileHeader(),  // Profile header container
+          _buildProfileHeader(), // Profile header container
           Expanded(
             child: Container(
               decoration: const BoxDecoration(
@@ -35,7 +79,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   ],
                 ),
               ),
-              child: _currentIndex == 0 ? _studentApprovalList() : _pastRecords(),
+              child: _screenItem(_currentIndex),
             ),
           ),
         ],
@@ -46,6 +90,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           setState(() {
             _currentIndex = index;
           });
+          print(index);
         },
         backgroundColor: const Color.fromARGB(255, 3, 21, 41),
         selectedItemColor: const Color.fromARGB(255, 124, 213, 249),
@@ -60,6 +105,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: 'Past Records',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.manage_accounts),
+            label: 'Manage',
           ),
         ],
       ),
@@ -76,10 +125,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 30.0,
-                backgroundImage: AssetImage('assets/images/profilephoto.jpg'),
-              ),
+              // CircleAvatar(
+              //   radius: 30.0,
+              //   backgroundImage: AssetImage('assets/images/profilephoto.jpg'),
+              // ),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,8 +142,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                         ),
                       );
                     },
-                    child: const Text(
-                      'Farisa Mol',
+                    child: Text(
+                      name,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20.0,
@@ -119,7 +168,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
               borderRadius: BorderRadius.circular(18.0),
             ),
             child: IconButton(
-              icon: const Icon(Icons.logout, size: 25, color: Color.fromARGB(255, 8, 14, 85)),
+              icon: const Icon(Icons.logout,
+                  size: 25, color: Color.fromARGB(255, 8, 14, 85)),
               onPressed: () {
                 _showLogoutConfirmationDialog(context);
               },
@@ -158,6 +208,23 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     );
   }
 
+  Widget _screenItem(int selectedIndex) {
+    switch (selectedIndex) {
+      case 0:
+        return _studentApprovalList();
+      case 1:
+        return _pastRecords();
+      case 2:
+        return StudentaddPage();
+      default:
+        return Text('Error');
+    }
+  }
+
+  Widget _manageStudent(){
+    return Center(child: Text("Students"));
+  }
+
   Widget _studentApprovalList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +250,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   borderRadius: BorderRadius.circular(15.0),
                 ),
                 elevation: 6,
-                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
@@ -267,10 +335,4 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       },
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: FacultyHomePage(),
-  ));
 }

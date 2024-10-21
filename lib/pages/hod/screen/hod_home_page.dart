@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HODHomePage extends StatefulWidget {
-  const HODHomePage({super.key});
+class HodHomePage extends StatefulWidget {
+  const HodHomePage({super.key});
 
   @override
-  _HODHomePageState createState() => _HODHomePageState();
+  _HodHomePageState createState() => _HodHomePageState();
 }
 
-class _HODHomePageState extends State<HODHomePage> {
+class _HodHomePageState extends State<HodHomePage> {
   int _currentIndex = 0;
 
   // Sample data for approved students by faculty (replace with actual data source)
@@ -101,10 +101,4 @@ class _HODHomePageState extends State<HODHomePage> {
       },
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: HODHomePage(),
-  ));
 }
