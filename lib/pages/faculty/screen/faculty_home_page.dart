@@ -1,9 +1,10 @@
+import 'package:cgas_official/pages/faculty/screen/past_records_page.dart';
 import 'package:cgas_official/pages/faculty/screen/student_add.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'student_token.dart'; // Import the student_token page
-import 'faculty_profile_page.dart'; // Import the faculty_profile_page
+import 'student_token.dart';
+import 'faculty_profile_page.dart';
 
 class FacultyHomePage extends StatefulWidget {
   const FacultyHomePage({super.key});
@@ -14,7 +15,6 @@ class FacultyHomePage extends StatefulWidget {
 
 class _FacultyHomePageState extends State<FacultyHomePage> {
   int _currentIndex = 0;
-
   String name = 'Loading...';
   String image = '';
 
@@ -27,36 +27,35 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   }
 
   Future<void> loadData() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
-    print("User is not logged in.");
-    return;
-  }
-  final userId = user.uid;  // User ID is now non-null
-  final firestore = FirebaseFirestore.instance;
-
-  try {
-    DocumentSnapshot hodDoc = await firestore.collection('hod').doc(userId).get();
-
-    if (hodDoc.exists) {
-      final data = hodDoc.data() as Map<String, dynamic>?;
-
-      if (data != null) {
-        setState(() {
-          name = data['name'] ?? "No Name Available";  // Default value for 'name'
-          image = data['imageUrl'] ?? "";  // Default value for 'imageUrl'
-        });
-      }
-    } else {
-      print("No document found for this user.");
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print("User is not logged in.");
+      return;
     }
-  } catch (e) {
-    print("Error Fetching Data: $e");
+    final userId = user.uid;
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      DocumentSnapshot hodDoc = await firestore.collection('hod').doc(userId).get();
+
+      if (hodDoc.exists) {
+        final data = hodDoc.data() as Map<String, dynamic>?;
+
+        if (data != null) {
+          setState(() {
+            name = data['name'] ?? "No Name Available";
+            image = data['imageUrl'] ?? "";
+          });
+        }
+      } else {
+        print("No document found for this user.");
+      }
+    } catch (e) {
+      print("Error Fetching Data: $e");
+    }
   }
-}
 
-
-  // Sample data for students (only John Doe for this example)
+  // Sample data for students
   List<Map<String, String>> students = [
     {"name": "John Doe", "id": "ICE23MCA-2001"},
   ];
@@ -66,7 +65,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     return Scaffold(
       body: Column(
         children: [
-          _buildProfileHeader(), // Profile header container
+          _buildProfileHeader(),
           Expanded(
             child: Container(
               decoration: const BoxDecoration(
@@ -90,7 +89,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           setState(() {
             _currentIndex = index;
           });
-          print(index);
         },
         backgroundColor: const Color.fromARGB(255, 3, 21, 41),
         selectedItemColor: const Color.fromARGB(255, 124, 213, 249),
@@ -125,11 +123,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         children: [
           Row(
             children: [
-              // CircleAvatar(
-              //   radius: 30.0,
-              //   backgroundImage: AssetImage('assets/images/profilephoto.jpg'),
-              // ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 13),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -180,7 +174,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     );
   }
 
-  // The logout confirmation dialog method
+  // Logout confirmation dialog method
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -213,16 +207,12 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       case 0:
         return _studentApprovalList();
       case 1:
-        return _pastRecords();
+        return const PastRecordsPage(); // Use the new page
       case 2:
         return StudentaddPage();
       default:
         return Text('Error');
     }
-  }
-
-  Widget _manageStudent(){
-    return Center(child: Text("Students"));
   }
 
   Widget _studentApprovalList() {
@@ -250,8 +240,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   borderRadius: BorderRadius.circular(15.0),
                 ),
                 elevation: 6,
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
@@ -301,38 +290,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _pastRecords() {
-    // Sample past records (replace with actual data)
-    List<String> pastRecords = ["Record 1", "Record 2", "Record 3"];
-
-    return ListView.builder(
-      itemCount: pastRecords.length,
-      itemBuilder: (context, index) {
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          elevation: 6,
-          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            tileColor: const Color.fromARGB(255, 124, 213, 249),
-            title: Text(
-              pastRecords[index],
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
