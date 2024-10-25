@@ -36,10 +36,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     final firestore = FirebaseFirestore.instance;
 
     try {
-      DocumentSnapshot hodDoc = await firestore.collection('hod').doc(userId).get();
+      DocumentSnapshot facultyDoc = await firestore.collection('faculty').doc(userId).get();
 
-      if (hodDoc.exists) {
-        final data = hodDoc.data() as Map<String, dynamic>?;
+      if (facultyDoc.exists) {
+        final data = facultyDoc.data() as Map<String, dynamic>?;
 
         if (data != null) {
           setState(() {
@@ -55,7 +55,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     }
   }
 
-  // Sample data for students
+  // Sample data for students (should be replaced with actual data from Firestore)
   List<Map<String, String>> students = [
     {"name": "John Doe", "id": "ICE23MCA-2001"},
   ];
@@ -113,7 +113,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     );
   }
 
-  // Method to build the profile header
   Widget _buildProfileHeader() {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -138,7 +137,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                     },
                     child: Text(
                       name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -162,8 +161,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
               borderRadius: BorderRadius.circular(18.0),
             ),
             child: IconButton(
-              icon: const Icon(Icons.logout,
-                  size: 25, color: Color.fromARGB(255, 8, 14, 85)),
+              icon: const Icon(Icons.logout, size: 25, color: Color.fromARGB(255, 8, 14, 85)),
               onPressed: () {
                 _showLogoutConfirmationDialog(context);
               },
@@ -174,7 +172,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     );
   }
 
-  // Logout confirmation dialog method
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -192,6 +189,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
+                FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop();
                 Navigator.pushReplacementNamed(context, '/login');
               },
@@ -207,11 +205,11 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       case 0:
         return _studentApprovalList();
       case 1:
-        return const PastRecordsPage(); // Use the new page
+        return const PastRecordsPage();
       case 2:
-        return StudentaddPage();
+        return const StudentAddPage();
       default:
-        return Text('Error');
+        return const Center(child: Text('Error'));
     }
   }
 
@@ -219,9 +217,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 20.0, left: 16.0),
-          child: const Text(
+        const Padding(
+          padding: EdgeInsets.only(top: 20.0, left: 16.0),
+          child: Text(
             'Approval List',
             style: TextStyle(
               fontSize: 24.0,

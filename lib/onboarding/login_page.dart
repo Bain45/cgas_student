@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
         // Check in Faculty collection
         DocumentSnapshot facultyDoc =
-            await firestore.collection('faculity').doc(authId).get();
+            await firestore.collection('faculty').doc(authId).get();
         if (facultyDoc.exists) {
           Navigator.pushReplacement(
             context,
