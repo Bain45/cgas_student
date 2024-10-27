@@ -1,12 +1,11 @@
 import 'package:cgas_official/firebase_options.dart';
 import 'package:cgas_official/onboarding/forgot_pass.dart';
 import 'package:cgas_official/onboarding/login_page.dart';
-//import 'package:cgas_official/pages/faculty/screen/faculty_home_page.dart';
-//import 'package:cgas_official/pages/student/screen/student_home_page.dart';
 import 'package:cgas_official/pages/student/screen/history_page.dart';
 import 'package:cgas_official/pages/student/screen/inpass_page.dart';
 import 'package:cgas_official/pages/student/screen/my_profile_page.dart';
 import 'package:cgas_official/pages/student/screen/outpass_page.dart';
+//import 'package:cgas_official/pages/student/screen/student_home_page.dart';
 import 'package:cgas_official/pages/student/screen/tokens_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

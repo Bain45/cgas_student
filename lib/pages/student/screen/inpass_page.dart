@@ -1,31 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(MaterialApp(
     theme: ThemeData(
       primaryColor: Colors.teal,
       scaffoldBackgroundColor: Colors.grey[200],
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(
-            color: Colors.teal, // Color of the border when enabled
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(
-            color: Colors.teal, // Color of the border when focused
-            width: 2.0,
-          ),
-        ),
-        labelStyle: const TextStyle(
-          color: Colors.teal, // Color of the label text
-        ),
-      ),
     ),
     home: const InpassPage(),
   ));
@@ -74,12 +59,47 @@ class _InpassPageState extends State<InpassPage> {
     }
   }
 
+  // Method to save inpass request to Firestore
+  Future<void> _submitInpassRequest() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Get the currently authenticated user
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Create the inpass request in Firestore
+        await FirebaseFirestore.instance.collection('inpass').add({
+          'uid': user.uid, // Store the student UID
+          'date': _dateController.text,
+          'time': _timeController.text,
+          'reason': _reasonController.text,
+          'timestamp': FieldValue.serverTimestamp(), // Optional: Store the request time
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Inpass request submitted successfully!')),
+        );
+
+        // Clear fields after submission
+        _dateController.clear();
+        _timeController.clear();
+        _reasonController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 4, 20, 44),
       appBar: AppBar(
-        title: const Text('Inpass Request',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Inpass Request',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 4, 20, 44),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -200,15 +220,7 @@ class _InpassPageState extends State<InpassPage> {
                     ),
                     const SizedBox(height: 20.0),
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
-                          );
-                          _dateController.clear();
-                          _reasonController.clear();
-                        }
-                      },
+                      onPressed: _submitInpassRequest,
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             const Color.fromARGB(255, 163, 234, 255),
@@ -219,7 +231,13 @@ class _InpassPageState extends State<InpassPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                       ),
-                      child: const Text('Submit',style: TextStyle(color: Color.fromARGB(255, 3, 21, 41),fontWeight: FontWeight.bold),),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 3, 21, 41),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),

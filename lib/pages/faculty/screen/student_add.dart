@@ -58,44 +58,69 @@ class _StudentAddPageState extends State<StudentAddPage> {
   Future<void> _saveStudentToFirestore() async {
     if (_formKey.currentState!.validate() && _selectedImage != null) {
       try {
-        // Example: Get the current facultyId (replace with actual faculty ID logic)
-        String facultyId = "currentFacultyId";
+        // Get the currently authenticated user
+        User? user = FirebaseAuth.instance.currentUser;
 
-        // Upload image to Firebase Storage and get the image URL
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('student_photos/${_selectedImage!.name}');
-        await storageRef.putFile(File(_selectedImage!.path));
-        imageUrl = await storageRef.getDownloadURL();
+        if (user != null) {
+          // Retrieve faculty information from Firestore
+          DocumentSnapshot facultySnapshot = await FirebaseFirestore.instance
+              .collection('faculty') // Change this to your faculty collection name
+              .doc(user.uid) // Assuming the document ID is the same as the user's UID
+              .get();
 
-        // Create the user in Firebase Auth
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
+          if (facultySnapshot.exists) {
+            String facultyId = facultySnapshot.id; // Get the faculty ID
+            String departmentId = facultySnapshot['departmentId']; // Get the department ID
 
-        // Save additional details in Firestore
-        DocumentReference studentRef = FirebaseFirestore.instance
-            .collection('faculty')
-            .doc(facultyId)
-            .collection('students')
-            .doc();
+            // Upload image to Firebase Storage and get the image URL
+            final storageRef = FirebaseStorage.instance
+                .ref()
+                .child('student_photos/${_selectedImage!.name}');
+            await storageRef.putFile(File(_selectedImage!.path));
+            imageUrl = await storageRef.getDownloadURL();
 
-        await studentRef.set({
-          'name': nameController.text,
-          'regnum': regnumController.text,
-          'email': emailController.text,
-          'contact': contactController.text,
-          'gender': _gender,
-          'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
-          'imageUrl': imageUrl,
-          'facultyId': facultyId, // Save the current faculty's ID
-        });
+            // Create the user in Firebase Auth and get the UID
+            UserCredential userCredential = await FirebaseAuth.instance
+                .createUserWithEmailAndPassword(
+              email: emailController.text,
+              password: passwordController.text,
+            );
 
-        // Success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Student added successfully!')),
-        );
+            // Get the student UID
+            String studentUid = userCredential.user!.uid; // Get the student UID
+
+            // Save additional details in Firestore under "students" collection
+            DocumentReference studentRef = FirebaseFirestore.instance
+                .collection('students')
+                .doc(studentUid); // Use the student UID as the document ID
+
+            await studentRef.set({
+              'name': nameController.text,
+              'regnum': regnumController.text,
+              'email': emailController.text,
+              'contact': contactController.text,
+              'gender': _gender,
+              'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+              'imageUrl': imageUrl,
+              'facultyId': facultyId, // Save the retrieved faculty ID
+              'departmentId': departmentId, // Save the retrieved department ID
+              'studentUid': studentUid, // Store the student UID
+            });
+
+            // Success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Student added successfully!')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Faculty not found.')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User not authenticated.')),
+          );
+        }
       } catch (e) {
         print(e);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -268,19 +293,16 @@ class _StudentAddPageState extends State<StudentAddPage> {
                 onTap: () => _selectDate(context),
                 child: AbsorbPointer(
                   child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: _selectedDate == null
-                          ? 'Date of Birth'
-                          : DateFormat('yyyy-MM-dd').format(_selectedDate!),
+                    decoration: const InputDecoration(
+                      labelText: 'Date of Birth',
                       filled: true,
                       fillColor: Colors.white,
                     ),
-                    validator: (value) {
-                      if (_selectedDate == null) {
-                        return 'Please select the date of birth';
-                      }
-                      return null;
-                    },
+                    controller: TextEditingController(
+                      text: _selectedDate == null
+                          ? ''
+                          : DateFormat('yyyy-MM-dd').format(_selectedDate!),
+                    ),
                   ),
                 ),
               ),
@@ -289,25 +311,22 @@ class _StudentAddPageState extends State<StudentAddPage> {
               // Password field
               TextFormField(
                 controller: passwordController,
-                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   filled: true,
                   fillColor: Colors.white,
                 ),
+                obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a password';
                   }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
                   return null;
                 },
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 16),
 
-              // Add Student Button
+              // Submit Button
               ElevatedButton(
                 onPressed: _saveStudentToFirestore,
                 child: const Text('Add Student'),

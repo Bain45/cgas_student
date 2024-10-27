@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -74,12 +76,44 @@ class _OutpassPageState extends State<OutpassPage> {
     }
   }
 
+  // Method to save outpass request to Firestore
+  Future<void> _submitOutpassRequest() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Get the currently authenticated user
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Create the outpass request in Firestore
+        await FirebaseFirestore.instance.collection('outpass').add({
+          'uid': user.uid, // Store the student UID
+          'date': _dateController.text,
+          'time': _timeController.text,
+          'reason': _reasonController.text,
+          'timestamp': FieldValue.serverTimestamp(), // Optional: Store the request time
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Outpass request submitted successfully!')),
+        );
+
+        // Clear fields after submission
+        _dateController.clear();
+        _timeController.clear();
+        _reasonController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 4, 20, 44),
       appBar: AppBar(
-        title: const Text('Outpass Request',style: TextStyle(color: Colors.white),),
+        title: const Text('Outpass Request', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 4, 20, 44),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -200,15 +234,7 @@ class _OutpassPageState extends State<OutpassPage> {
                     ),
                     const SizedBox(height: 20.0),
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
-                          );
-                          _dateController.clear();
-                          _reasonController.clear();
-                        }
-                      },
+                      onPressed: _submitOutpassRequest,
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             const Color.fromARGB(255, 163, 234, 255),
@@ -219,7 +245,13 @@ class _OutpassPageState extends State<OutpassPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                       ),
-                      child: const Text('Submit',style: TextStyle(color: Color.fromARGB(255, 3, 21, 41),fontWeight: FontWeight.bold),),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 3, 21, 41),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
