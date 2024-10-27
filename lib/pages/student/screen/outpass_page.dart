@@ -83,9 +83,12 @@ class _OutpassPageState extends State<OutpassPage> {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
+        // Create a new document reference for the outpass request
+        DocumentReference newOutpassRef = FirebaseFirestore.instance.collection('outpass').doc();
+
         // Create the outpass request in Firestore
-        await FirebaseFirestore.instance.collection('outpass').add({
-          'uid': user.uid, // Store the student UID
+        await newOutpassRef.set({
+          'studentUid': user.uid, // Store the student UID
           'date': _dateController.text,
           'time': _timeController.text,
           'reason': _reasonController.text,
@@ -117,148 +120,144 @@ class _OutpassPageState extends State<OutpassPage> {
         backgroundColor: const Color.fromARGB(255, 4, 20, 44),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 163, 234, 255),
-                        borderRadius: BorderRadius.circular(15.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black,
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 163, 234, 255),
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                      child: TextFormField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                          labelText: 'Select Date',
-                          labelStyle: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black),
-                          prefixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_today,
-                                color: Color.fromARGB(255, 0, 0, 0)),
-                            onPressed: () => _selectDate(context),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a date';
-                          }
-                          return null;
-                        },
-                        readOnly: true,
+                    ],
+                  ),
+                  child: TextFormField(
+                    controller: _dateController,
+                    decoration: InputDecoration(
+                      labelText: 'Select Date',
+                      labelStyle: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black),
+                      prefixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today,
+                            color: Color.fromARGB(255, 0, 0, 0)),
+                        onPressed: () => _selectDate(context),
                       ),
                     ),
-                    const SizedBox(height: 16.0),
-                    Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 163, 234, 255),
-                        borderRadius: BorderRadius.circular(15.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        controller: _timeController,
-                        decoration: InputDecoration(
-                          labelText: 'Select Time',
-                          labelStyle: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black),
-                          prefixIcon: IconButton(
-                            icon: const Icon(Icons.access_time_outlined,
-                                color: Color.fromARGB(255, 0, 0, 0)),
-                            onPressed: () => _selectTime(context),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a time';
-                          }
-                          return null;
-                        },
-                        readOnly: true,
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 163, 234, 255),
-                        borderRadius: BorderRadius.circular(15.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        controller: _reasonController,
-                        decoration: const InputDecoration(
-                          labelText: 'Enter Reason',
-                          labelStyle: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black),
-                        ),
-                        maxLines: 4,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a reason';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    ElevatedButton(
-                      onPressed: _submitOutpassRequest,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 163, 234, 255),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 30),
-                        textStyle: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 3, 21, 41),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a date';
+                      }
+                      return null;
+                    },
+                    readOnly: true,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16.0),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 163, 234, 255),
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withOpacity(.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    controller: _timeController,
+                    decoration: InputDecoration(
+                      labelText: 'Select Time',
+                      labelStyle: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black),
+                      prefixIcon: IconButton(
+                        icon: const Icon(Icons.access_time_outlined,
+                            color: Color.fromARGB(255, 0, 0, 0)),
+                        onPressed: () => _selectTime(context),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a time';
+                      }
+                      return null;
+                    },
+                    readOnly: true,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 163, 234, 255),
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    controller: _reasonController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Reason',
+                      labelStyle: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black),
+                    ),
+                    maxLines: 4,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a reason';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                ElevatedButton(
+                  onPressed: _submitOutpassRequest,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color.fromARGB(255, 163, 234, 255),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
+                    textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 3, 21, 41),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

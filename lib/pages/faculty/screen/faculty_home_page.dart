@@ -1,5 +1,7 @@
 import 'package:cgas_official/pages/faculty/screen/past_records_page.dart';
+import 'package:cgas_official/pages/faculty/screen/request_list.dart';
 import 'package:cgas_official/pages/faculty/screen/student_add.dart';
+import 'package:cgas_official/pages/faculty/screen/student_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   int _currentIndex = 0;
   String name = 'Loading...';
   String image = '';
-
   final user = FirebaseAuth.instance.currentUser;
+  List<Map<String, String>> students = []; 
+  final firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -28,12 +31,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
 
   Future<void> loadData() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      print("User is not logged in.");
-      return;
-    }
+    if (user == null) return;
+
     final userId = user.uid;
-    final firestore = FirebaseFirestore.instance;
 
     try {
       DocumentSnapshot facultyDoc = await firestore.collection('faculty').doc(userId).get();
@@ -47,18 +47,66 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             image = data['imageUrl'] ?? "";
           });
         }
-      } else {
-        print("No document found for this user.");
       }
+
+      await fetchStudents(userId);
     } catch (e) {
       print("Error Fetching Data: $e");
     }
   }
 
-  // Sample data for students (should be replaced with actual data from Firestore)
-  List<Map<String, String>> students = [
-    {"name": "John Doe", "id": "ICE23MCA-2001"},
-  ];
+  Future<void> fetchStudents(String facultyId) async {
+    
+    List<Map<String, String>> studentList = [];
+QuerySnapshot studsnapshot = await firestore.collection('students')
+          .where('facultyId', isEqualTo: facultyId)
+          .get();
+
+          for (var doc in studsnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        
+      }
+
+
+    // Get students from inpass and outpass collections
+    for (var collection in ['inpass', 'outpass']) {
+      QuerySnapshot snapshot = await firestore.collection(collection)
+          .where('facultyId', isEqualTo: facultyId)
+          .get();
+
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        studentList.add({
+          "name": data['studentName'] ?? "No Name",
+          "id": data['studentUid'] ?? "No ID",
+        });
+      }
+    }
+
+    setState(() {
+      students = studentList;
+    });
+  }
+
+  Future<void> fetchPass(studId) async {
+    try {
+      for (var collection in ['inpass', 'outpass']) {
+      QuerySnapshot snapshot = await firestore.collection(collection)
+          .where('studentUid', isEqualTo: studId)
+          .get();
+
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        // studentList.add({
+        //   "name": data['studentName'] ?? "No Name",
+        //   "id": data['studentUid'] ?? "No ID",
+        // });
+      }
+    }
+    } catch (e) {
+      
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,11 +251,11 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   Widget _screenItem(int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return _studentApprovalList();
+        return CombinedRequestsPage();
       case 1:
         return const PastRecordsPage();
       case 2:
-        return const StudentAddPage();
+        return const StudentListPage();
       default:
         return const Center(child: Text('Error'));
     }
@@ -232,6 +280,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         Expanded(
           child: ListView.builder(
             itemCount: students.length,
+            shrinkWrap: true,
             itemBuilder: (context, index) {
               return Card(
                 shape: RoundedRectangleBorder(

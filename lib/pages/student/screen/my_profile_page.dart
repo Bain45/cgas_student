@@ -47,7 +47,14 @@ class MyProfilePage extends StatelessWidget {
                     Center(
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(userData['photoUrl'] ?? 'https://example.com/default.jpg'), // Fallback URL
+                        backgroundImage: NetworkImage(
+                          userData['imageUrl'] ?? 'gs://cgas-2024.appspot.com/student_photos',
+                        ),
+                        onBackgroundImageError: (_, __) => const Icon(
+                          Icons.account_circle,
+                          size: 50,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -92,7 +99,7 @@ class MyProfilePage extends StatelessWidget {
                         final departmentData = departmentSnapshot.data!.data() as Map<String, dynamic>;
                         return Center(
                           child: Text(
-                            'Department: ${departmentData['name'] ?? 'N/A'}', // Change 'name' to the appropriate field in your department document
+                            'Department: ${departmentData['department'] ?? 'N/A'}', // Change 'department' to the appropriate field in your department document
                             style: const TextStyle(
                               fontSize: 16,
                               color: Colors.white,
@@ -102,7 +109,6 @@ class MyProfilePage extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 20),
-                    // Add additional content if needed
                   ],
                 );
               },

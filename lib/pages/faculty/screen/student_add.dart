@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class StudentAddPage extends StatefulWidget {
   const StudentAddPage({super.key});
@@ -26,6 +27,36 @@ class _StudentAddPageState extends State<StudentAddPage> {
   DateTime? _selectedDate;
   XFile? _selectedImage;
   String? imageUrl;
+
+  
+  Map<String, String> yearMap = {};
+  String? selectedYearId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchYear();
+  }
+
+  Future<void> _fetchYear() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance.collection('academicYears').get();
+      setState(() {
+        yearMap = {
+          for (var doc in querySnapshot.docs) doc.id: doc['academicYear'],
+        };
+      });
+    } catch (e) {
+      print("Error fetching departments: $e");
+      Fluttertoast.showToast(
+        msg: "Error fetching departments",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
 
   // Method to pick an image
   Future<void> _pickImage() async {
@@ -101,6 +132,7 @@ class _StudentAddPageState extends State<StudentAddPage> {
               'contact': contactController.text,
               'gender': _gender,
               'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+              'year': selectedYearId,
               'imageUrl': imageUrl,
               'facultyId': facultyId, // Save the retrieved faculty ID
               'departmentId': departmentId, // Save the retrieved department ID
@@ -111,6 +143,7 @@ class _StudentAddPageState extends State<StudentAddPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Student added successfully!')),
             );
+            Navigator.pop(context);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Faculty not found.')),
@@ -307,6 +340,30 @@ class _StudentAddPageState extends State<StudentAddPage> {
                 ),
               ),
               const SizedBox(height: 16),
+
+              DropdownButtonFormField<String>(
+                      value: selectedYearId,
+                      decoration: const InputDecoration(labelText: "Academic Year"),
+                      items: yearMap.entries.map((entry) {
+                        return DropdownMenuItem<String>(
+                          value: entry.key,
+                          child: Text(entry.value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedYearId = newValue;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a academic year';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
 
               // Password field
               TextFormField(
