@@ -199,7 +199,7 @@ class _HodHomePageState extends State<HodHomePage> {
   Widget _screenItem(int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return const ApprovalListPage(); // Connect the Approval List page
+        return const CombinedRequestsPage(); // Connect the Approval List page
       case 1:
         return const PastRecordsPage(); // Connect the Past Records page
       default:
