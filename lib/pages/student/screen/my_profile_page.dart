@@ -69,16 +69,6 @@ class MyProfilePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Center(
-                      child: Text(
-                        'Register ID: ${userData['regnum'] ?? 'N/A'}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
                     // Fetch department name based on departmentId
                     FutureBuilder<DocumentSnapshot>(
                       future: FirebaseFirestore.instance
@@ -108,7 +98,37 @@ class MyProfilePage extends StatelessWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Register Number: ${userData['regnum'] ?? 'N/A'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ), 
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Phone Number: ${userData['contact'] ?? 'N/A'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Email Id: ${userData['email'] ?? 'N/A'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 );
               },
@@ -116,4 +136,4 @@ class MyProfilePage extends StatelessWidget {
           : const Center(child: Text('User not logged in.')),
     );
   }
-}
+} 

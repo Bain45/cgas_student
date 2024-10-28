@@ -97,6 +97,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             .get();
 
         for (var doc in snapshot.docs) {
+          // ignore: unused_local_variable
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           // Process data as needed
         }
