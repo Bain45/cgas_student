@@ -8,7 +8,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class StudentAddPage extends StatefulWidget {
-  const StudentAddPage({super.key});
+  final String facultyId; // Add facultyId parameter
+
+  const StudentAddPage({super.key, required this.facultyId}); // Update constructor
 
   @override
   _StudentAddPageState createState() => _StudentAddPageState();
@@ -28,7 +30,6 @@ class _StudentAddPageState extends State<StudentAddPage> {
   XFile? _selectedImage;
   String? imageUrl;
 
-  
   Map<String, String> yearMap = {};
   String? selectedYearId;
 
@@ -47,9 +48,9 @@ class _StudentAddPageState extends State<StudentAddPage> {
         };
       });
     } catch (e) {
-      print("Error fetching departments: $e");
+      print("Error fetching academic years: $e");
       Fluttertoast.showToast(
-        msg: "Error fetching departments",
+        msg: "Error fetching academic years",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.red,
@@ -60,8 +61,7 @@ class _StudentAddPageState extends State<StudentAddPage> {
 
   // Method to pick an image
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -93,62 +93,44 @@ class _StudentAddPageState extends State<StudentAddPage> {
         User? user = FirebaseAuth.instance.currentUser;
 
         if (user != null) {
-          // Retrieve faculty information from Firestore
-          DocumentSnapshot facultySnapshot = await FirebaseFirestore.instance
-              .collection('faculty') // Change this to your faculty collection name
-              .doc(user.uid) // Assuming the document ID is the same as the user's UID
-              .get();
+          // Use the passed facultyId
+          String facultyId = widget.facultyId; // Use the facultyId passed to the widget
 
-          if (facultySnapshot.exists) {
-            String facultyId = facultySnapshot.id; // Get the faculty ID
-            String departmentId = facultySnapshot['departmentId']; // Get the department ID
+          // Upload image to Firebase Storage and get the image URL
+          final storageRef = FirebaseStorage.instance.ref().child('student_photos/${_selectedImage!.name}');
+          await storageRef.putFile(File(_selectedImage!.path));
+          imageUrl = await storageRef.getDownloadURL();
 
-            // Upload image to Firebase Storage and get the image URL
-            final storageRef = FirebaseStorage.instance
-                .ref()
-                .child('student_photos/${_selectedImage!.name}');
-            await storageRef.putFile(File(_selectedImage!.path));
-            imageUrl = await storageRef.getDownloadURL();
+          // Create the user in Firebase Auth and get the UID
+          UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: emailController.text,
+            password: passwordController.text,
+          );
 
-            // Create the user in Firebase Auth and get the UID
-            UserCredential userCredential = await FirebaseAuth.instance
-                .createUserWithEmailAndPassword(
-              email: emailController.text,
-              password: passwordController.text,
-            );
+          // Get the student UID
+          String studentUid = userCredential.user!.uid; // Get the student UID
 
-            // Get the student UID
-            String studentUid = userCredential.user!.uid; // Get the student UID
+          // Save additional details in Firestore under "students" collection
+          DocumentReference studentRef = FirebaseFirestore.instance.collection('students').doc(studentUid); // Use the student UID as the document ID
 
-            // Save additional details in Firestore under "students" collection
-            DocumentReference studentRef = FirebaseFirestore.instance
-                .collection('students')
-                .doc(studentUid); // Use the student UID as the document ID
+          await studentRef.set({
+            'name': nameController.text,
+            'regnum': regnumController.text,
+            'email': emailController.text,
+            'contact': contactController.text,
+            'gender': _gender,
+            'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+            'year': selectedYearId,
+            'imageUrl': imageUrl,
+            'facultyId': facultyId, // Use the passed faculty ID
+            'studentUid': studentUid, // Store the student UID
+          });
 
-            await studentRef.set({
-              'name': nameController.text,
-              'regnum': regnumController.text,
-              'email': emailController.text,
-              'contact': contactController.text,
-              'gender': _gender,
-              'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
-              'year': selectedYearId,
-              'imageUrl': imageUrl,
-              'facultyId': facultyId, // Save the retrieved faculty ID
-              'departmentId': departmentId, // Save the retrieved department ID
-              'studentUid': studentUid, // Store the student UID
-            });
-
-            // Success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Student added successfully!')),
-            );
-            Navigator.pop(context);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Faculty not found.')),
-            );
-          }
+          // Success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Student added successfully!')),
+          );
+          Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('User not authenticated.')),
@@ -166,8 +148,11 @@ class _StudentAddPageState extends State<StudentAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 3, 21, 41),
       appBar: AppBar(
-        title: const Text('Add Student'),
+        title: const Text('Add Student',style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color.fromARGB(255, 3, 21, 41), // Set AppBar color
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -182,16 +167,15 @@ class _StudentAddPageState extends State<StudentAddPage> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: const Color(0xff4c505b),
+                        backgroundColor: const Color.fromARGB(255, 124, 213, 249),
                         backgroundImage: _selectedImage != null
                             ? FileImage(File(_selectedImage!.path))
-                            : const AssetImage('assets/dummy-profile-pic.png')
-                                as ImageProvider,
+                            : const AssetImage('assets/dummy-profile-pic.png') as ImageProvider,
                         child: _selectedImage == null
                             ? const Icon(
-                                Icons.add,
+                                Icons.photo,
                                 size: 40,
-                                color: Color.fromARGB(255, 134, 134, 134),
+                                color: Color.fromARGB(255, 255, 255, 255),
                               )
                             : null,
                       ),
@@ -218,10 +202,15 @@ class _StudentAddPageState extends State<StudentAddPage> {
               // Name field
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Name',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: const Color.fromARGB(255, 124, 213, 249),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -235,10 +224,15 @@ class _StudentAddPageState extends State<StudentAddPage> {
               // Register Number field
               TextFormField(
                 controller: regnumController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Register Number',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: const Color.fromARGB(255, 124, 213, 249),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -252,10 +246,15 @@ class _StudentAddPageState extends State<StudentAddPage> {
               // Email field
               TextFormField(
                 controller: emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: const Color.fromARGB(255, 124, 213, 249),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -272,10 +271,15 @@ class _StudentAddPageState extends State<StudentAddPage> {
               // Contact Number field
               TextFormField(
                 controller: contactController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contact Number',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: const Color.fromARGB(255, 124, 213, 249),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -290,12 +294,12 @@ class _StudentAddPageState extends State<StudentAddPage> {
               const SizedBox(height: 16),
 
               // Gender field
-              const Text('Gender', style: TextStyle(fontSize: 16)),
+              const Text('Gender', style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 124, 213, 249))), // Gender label color
               Row(
                 children: [
                   Expanded(
                     child: RadioListTile<String>(
-                      title: const Text('Male'),
+                      title: const Text('Male', style: TextStyle(color: Color.fromARGB(255, 124, 213, 249))), // Male label color
                       value: 'Male',
                       groupValue: _gender,
                       onChanged: (value) {
@@ -307,7 +311,7 @@ class _StudentAddPageState extends State<StudentAddPage> {
                   ),
                   Expanded(
                     child: RadioListTile<String>(
-                      title: const Text('Female'),
+                      title: const Text('Female', style: TextStyle(color: Color.fromARGB(255, 124, 213, 249))), // Female label color
                       value: 'Female',
                       groupValue: _gender,
                       onChanged: (value) {
@@ -326,10 +330,15 @@ class _StudentAddPageState extends State<StudentAddPage> {
                 onTap: () => _selectDate(context),
                 child: AbsorbPointer(
                   child: TextFormField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Date of Birth',
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: const Color.fromARGB(255, 124, 213, 249),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
                     ),
                     controller: TextEditingController(
                       text: _selectedDate == null
@@ -342,36 +351,50 @@ class _StudentAddPageState extends State<StudentAddPage> {
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-                      value: selectedYearId,
-                      decoration: const InputDecoration(labelText: "Academic Year"),
-                      items: yearMap.entries.map((entry) {
-                        return DropdownMenuItem<String>(
-                          value: entry.key,
-                          child: Text(entry.value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedYearId = newValue;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select a academic year';
-                        }
-                        return null;
-                      },
-                    ),
+                value: selectedYearId,
+                decoration: InputDecoration(
+                  labelText: "Academic Year",
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 124, 213, 249),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
+                ),
+                items: yearMap.entries.map((entry) {
+                  return DropdownMenuItem<String>(
+                    value: entry.key,
+                    child: Text(entry.value, style: const TextStyle(color: Colors.black)), // Year color
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedYearId = newValue;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select an academic year';
+                  }
+                  return null;
+                },
+              ),
 
-                    const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Password field
               TextFormField(
                 controller: passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: const Color.fromARGB(255, 124, 213, 249),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Label color
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -386,7 +409,14 @@ class _StudentAddPageState extends State<StudentAddPage> {
               // Submit Button
               ElevatedButton(
                 onPressed: _saveStudentToFirestore,
-                child: const Text('Add Student'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 124, 213, 249), // Button color
+                  padding: const EdgeInsets.symmetric(vertical: 16), // Button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Button border radius
+                  ),
+                ),
+                child: const Text('Add Student', style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 18)), // Button text color and size
               ),
             ],
           ),
