@@ -6,7 +6,7 @@ import 'package:cgas_official/pages/student/screen/inpass_page.dart';
 import 'package:cgas_official/pages/student/screen/my_profile_page.dart';
 import 'package:cgas_official/pages/student/screen/outpass_page.dart';
 //import 'package:cgas_official/pages/student/screen/student_home_page.dart';
-import 'package:cgas_official/pages/student/screen/tokens_page.dart';
+//import 'package:cgas_official/pages/student/screen/tokens_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -41,10 +41,11 @@ class MainApp extends StatelessWidget {
         '/inpass': (context) => const InpassPage(),
         '/outpass': (context) => const OutpassPage(),
         '/history': (context) => const HistoryPage(),
-        '/tokens': (context) => const TokensPage(),
+        //'/tokens': (context) => const TokensPage(),
         '/login': (context) => const LoginPage(),
         '/forgot-password': (context) => const ForgotPasswordPage(),
       },
     );
   }
 }
+
