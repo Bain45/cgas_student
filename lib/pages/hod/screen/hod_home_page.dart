@@ -1,5 +1,6 @@
-import 'package:cgas_official/pages/faculty/screen/past_records_page.dart';
-import 'package:cgas_official/pages/faculty/screen/student_token.dart';
+
+import 'package:cgas_official/pages/hod/screen/approval_list_page.dart';
+import 'package:cgas_official/pages/hod/screen/past_records_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -54,11 +55,6 @@ class _HodHomePageState extends State<HodHomePage> {
     }
   }
 
-  // Sample data for students
-  List<Map<String, String>> students = [
-    {"name": "John Doe", "id": "ICE23MCA-2001"},
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,7 +104,6 @@ class _HodHomePageState extends State<HodHomePage> {
     );
   }
 
-  // Method to build the profile header with profile picture
   Widget _buildProfileHeader() {
     return Container(
       padding: const EdgeInsets.all(25),
@@ -118,12 +113,11 @@ class _HodHomePageState extends State<HodHomePage> {
         children: [
           Row(
             children: [
-              // Profile picture
               CircleAvatar(
                 radius: 30.0,
                 backgroundImage: image.isNotEmpty
                     ? NetworkImage(image)
-                    : const AssetImage('assets/images/default_profile.png') as ImageProvider, // Use a default image if none exists
+                    : const AssetImage('assets/images/default_profile.png') as ImageProvider,
               ),
               const SizedBox(width: 12),
               Column(
@@ -164,8 +158,7 @@ class _HodHomePageState extends State<HodHomePage> {
               borderRadius: BorderRadius.circular(18.0),
             ),
             child: IconButton(
-              icon: const Icon(Icons.logout,
-                  size: 25, color: Color.fromARGB(255, 8, 14, 85)),
+              icon: const Icon(Icons.logout, size: 25, color: Color.fromARGB(255, 8, 14, 85)),
               onPressed: () {
                 _showLogoutConfirmationDialog(context);
               },
@@ -176,7 +169,6 @@ class _HodHomePageState extends State<HodHomePage> {
     );
   }
 
-  // Logout confirmation dialog method
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -207,89 +199,11 @@ class _HodHomePageState extends State<HodHomePage> {
   Widget _screenItem(int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return _studentApprovalList();
+        return const ApprovalListPage(); // Connect the Approval List page
       case 1:
-        return const PastRecordsPage(); // Use the new page
+        return const PastRecordsPage(); // Connect the Past Records page
       default:
-        return Text('Error');
+        return const Text('Error');
     }
-  }
-
-  Widget _studentApprovalList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 20.0, left: 16.0),
-          child: const Text(
-            'Approval List',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Expanded(
-          child: ListView.builder(
-            itemCount: students.length,
-            itemBuilder: (context, index) {
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                elevation: 6,
-                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  tileColor: const Color.fromARGB(255, 149, 218, 239),
-                  title: Text(
-                    students[index]["name"]!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  subtitle: Text(
-                    "Reg No: ${students[index]["id"]}",
-                    style: const TextStyle(color: Colors.black54),
-                  ),
-                  trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 28, 46, 99),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StudentToken(
-                            studentName: students[index]["name"]!,
-                            studentId: students[index]["id"]!,
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'View',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
   }
 }

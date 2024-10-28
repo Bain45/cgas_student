@@ -14,18 +14,18 @@ void main() {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(
-            color: Colors.teal, // Color of the border when enabled
+            color: Colors.teal,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(
-            color: Colors.teal, // Color of the border when focused
+            color: Colors.teal,
             width: 2.0,
           ),
         ),
         labelStyle: const TextStyle(
-          color: Colors.teal, // Color of the label text
+          color: Colors.teal,
         ),
       ),
     ),
@@ -45,6 +45,33 @@ class _OutpassPageState extends State<OutpassPage> {
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
+  
+  String? departmentId; // Variable to store the department ID
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDepartmentId();
+  }
+
+  // Method to fetch the department ID from Firestore
+  Future<void> _fetchDepartmentId() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      DocumentSnapshot studentDoc = await FirebaseFirestore.instance.collection('students').doc(user.uid).get();
+
+      if (studentDoc.exists) {
+        setState(() {
+          departmentId = studentDoc['departmentId']; // Assuming the department ID is stored in the field 'departmentId'
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Student document not found.')),
+        );
+      }
+    }
+  }
 
   // Method to show date picker
   Future<void> _selectDate(BuildContext context) async {
@@ -79,33 +106,31 @@ class _OutpassPageState extends State<OutpassPage> {
   // Method to save outpass request to Firestore
   Future<void> _submitOutpassRequest() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Get the currently authenticated user
       User? user = FirebaseAuth.instance.currentUser;
 
-      if (user != null) {
-        // Create a new document reference for the outpass request
+      if (user != null && departmentId != null) { // Check if departmentId is not null
         DocumentReference newOutpassRef = FirebaseFirestore.instance.collection('outpass').doc();
 
-        // Create the outpass request in Firestore
         await newOutpassRef.set({
-          'studentUid': user.uid, // Store the student UID
+          'studentUid': user.uid,
+          'departmentId': departmentId, // Save the department ID
           'date': _dateController.text,
           'time': _timeController.text,
           'reason': _reasonController.text,
-          'timestamp': FieldValue.serverTimestamp(), // Optional: Store the request time
+          'status': 0,
+          'timestamp': FieldValue.serverTimestamp(),
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Outpass request submitted successfully!')),
         );
 
-        // Clear fields after submission
         _dateController.clear();
         _timeController.clear();
         _reasonController.clear();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User not authenticated.')),
+          const SnackBar(content: Text('User not authenticated or department ID not found.')),
         );
       }
     }
@@ -246,13 +271,7 @@ class _OutpassPageState extends State<OutpassPage> {
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 3, 21, 41),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('Submit Request'),
                 ),
               ],
             ),

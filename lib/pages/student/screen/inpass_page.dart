@@ -28,6 +28,26 @@ class _InpassPageState extends State<InpassPage> {
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
+  
+  String? departmentId; // Variable to hold the department ID
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDepartmentId(); // Fetch department ID on initialization
+  }
+
+  // Fetch department ID from Firestore
+  Future<void> _fetchDepartmentId() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('students').doc(user.uid).get();
+      setState(() {
+        departmentId = userDoc['departmentId']; // Replace with your actual field name
+      });
+    }
+  }
 
   // Method to show date picker
   Future<void> _selectDate(BuildContext context) async {
@@ -71,10 +91,11 @@ class _InpassPageState extends State<InpassPage> {
         
         // Create the inpass request in Firestore
         await newInpassRef.set({
-          'studentUid': user.uid, // Store the student UID with the new key
+          'studentUid': user.uid, // Store the student UID
           'date': _dateController.text,
           'time': _timeController.text,
           'reason': _reasonController.text,
+          'departmentId': departmentId, // Store the department ID
           'status': 0,
           'timestamp': FieldValue.serverTimestamp(), // Optional: Store the request time
         });
@@ -236,8 +257,7 @@ class _InpassPageState extends State<InpassPage> {
                   child: const Text(
                     'Submit',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 3, 21, 41),
-                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
                 ),

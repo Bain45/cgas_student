@@ -22,43 +22,32 @@ class _CombinedRequestsPageState extends State<CombinedRequestsPage> {
     String facultyId = user.uid;
 
     try {
-      // Step 1: Fetch all students under this faculty
-      print("Fetching students for facultyId: $facultyId");
+      // Fetch all students under this faculty
       final studentsSnapshot = await FirebaseFirestore.instance
           .collection('students')
           .where('facultyId', isEqualTo: facultyId)
           .get();
 
-      // Get a list of student UIDs
-      List<String> studentUids = studentsSnapshot.docs
-          .map((doc) => doc.id)
-          .toList();
+      List<String> studentUids = studentsSnapshot.docs.map((doc) => doc.id).toList();
 
-      // Step 2: Fetch Inpass Requests for these students
-      print("Fetching inpass data for students: $studentUids");
+      // Fetch Inpass Requests for these students with status 0
       final inpassSnapshot = await FirebaseFirestore.instance
           .collection('inpass')
           .where('studentUid', whereIn: studentUids)
+          .where('status', isEqualTo: 0) // Filter for status 0
           .get();
 
       for (var doc in inpassSnapshot.docs) {
         final studentId = doc.data()['studentUid'];
-        print("Inpass document data: ${doc.data()}");
-
+        
         // Fetch student information using studentId
         final studentDoc = await FirebaseFirestore.instance
             .collection('students')
             .doc(studentId)
             .get();
 
-        if (!studentDoc.exists) {
-          print("Student document not found for ID: $studentId");
-          continue;
-        }
+        if (!studentDoc.exists) continue;
 
-        print("Student document data: ${studentDoc.data()}");
-
-        // Fetch academic year using studentId
         final academicYearId = studentDoc.data()?['year'];
         final academicYearDoc = await FirebaseFirestore.instance
             .collection('academicYears')
@@ -73,35 +62,27 @@ class _CombinedRequestsPageState extends State<CombinedRequestsPage> {
             'registerNumber': studentDoc.data()?['regnum'] ?? 'N/A',
             'academicYear': academicYearDoc.data()?['academicyear'] ?? 'N/A',
           },
-          'id': doc.id, // Add document ID if needed for further operations
+          'id': doc.id,
         });
       }
 
-      // Step 3: Fetch Outpass Requests for these students
-      print("Fetching outpass data for students: $studentUids");
+      // Fetch Outpass Requests for these students with status 0
       final outpassSnapshot = await FirebaseFirestore.instance
           .collection('outpass')
           .where('studentUid', whereIn: studentUids)
+          .where('status', isEqualTo: 0) // Filter for status 0
           .get();
 
       for (var doc in outpassSnapshot.docs) {
         final studentId = doc.data()['studentUid'];
-        print("Outpass document data: ${doc.data()}");
-
-        // Fetch student information using studentId
+        
         final studentDoc = await FirebaseFirestore.instance
             .collection('students')
             .doc(studentId)
             .get();
 
-        if (!studentDoc.exists) {
-          print("Student document not found for ID: $studentId");
-          continue;
-        }
+        if (!studentDoc.exists) continue;
 
-        print("Student document data: ${studentDoc.data()}");
-
-        // Fetch academic year using studentId
         final academicYearId = studentDoc.data()?['year'];
         final academicYearDoc = await FirebaseFirestore.instance
             .collection('academicYears')
@@ -114,9 +95,9 @@ class _CombinedRequestsPageState extends State<CombinedRequestsPage> {
           'studentInfo': {
             'name': studentDoc.data()?['name'] ?? 'No Name',
             'registerNumber': studentDoc.data()?['regnum'] ?? 'N/A',
-            'academicYear': academicYearDoc.data()?['academicyear'] ?? 'N/A',
+            'academicYear': academicYearDoc.data()?['academicYear'] ?? 'N/A',
           },
-          'id': doc.id, // Add document ID if needed for further operations
+          'id': doc.id,
         });
       }
     } catch (e) {
@@ -129,21 +110,23 @@ class _CombinedRequestsPageState extends State<CombinedRequestsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 3, 21, 41),
       appBar: AppBar(
-        title: const Text('Combined Requests'),
+        title: const Text(
+          'GatePass Requests',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromARGB(255, 3, 21, 41), // Dark blue color
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchInpassAndOutpassData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            print("Fetching data...");
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            print("Error fetching data: ${snapshot.error}");
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            print("No data found");
-            return const Center(child: Text('No requests found.'));
+            return const Center(child: Text('No requests found.',style: TextStyle(color: Colors.white),));
           }
 
           final requests = snapshot.data!;
@@ -153,22 +136,31 @@ class _CombinedRequestsPageState extends State<CombinedRequestsPage> {
             itemBuilder: (context, index) {
               final request = requests[index];
               final studentInfo = request['studentInfo'];
-              return ListTile(
-                title: Text(studentInfo['name'] ?? 'No Name'),
-                subtitle: Text(
-                  'Register Number: ${studentInfo['registerNumber']}\nAcademic Year: ${studentInfo['academicYear']}',
-                ),
-                onTap: () {
-                  // Navigate to another screen to show full details of the request
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RequestDetailsPage(
-                        request: request,
-                      ),
+              return Card(
+                color: const Color.fromARGB(255, 149, 218, 239),
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                elevation: 4,
+                child: ListTile(
+                  title: Text(
+                    studentInfo['name'] ?? 'No Name',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 2, 0, 0),
                     ),
-                  );
-                },
+                  ),
+                  subtitle: Text(
+                    'Register Number: ${studentInfo['registerNumber']}\nAcademic Year: ${studentInfo['academicYear']}',
+                    style: const TextStyle(color: Color.fromARGB(137, 0, 0, 0)),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestDetailsPage(request: request),
+                      ),
+                    );
+                  },
+                ),
               );
             },
           );
@@ -191,7 +183,7 @@ class RequestDetailsPage extends StatelessWidget {
           .get();
 
       if (studentDoc.exists) {
-        return studentDoc.data()?['photoUrl']; // Assuming 'photoUrl' field contains the URL of the profile photo
+        return studentDoc.data()?['imageUrl']; // Assuming 'imageUrl' contains the profile photo URL
       }
     } catch (e) {
       print('Error fetching profile picture: $e');
@@ -199,16 +191,35 @@ class RequestDetailsPage extends StatelessWidget {
     return null;
   }
 
+  Future<void> _updateRequestStatus(String requestId, int status) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(request['type']) // Use the type to determine which collection (inpass or outpass)
+          .doc(requestId)
+          .update({'status': status});
+      print('Status updated to $status for request ID: $requestId');
+    } catch (e) {
+      print('Error updating status: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final studentInfo = request['studentInfo'];
     final requestData = request['data'];
     final studentId = requestData['studentUid'];
+    final requestId = request['id']; // Get the request ID for updates
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request Details'),
-        backgroundColor: const Color(0xFF032935), // Dark blue color
+        title: const Text(
+          'Request Details',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromARGB(255, 3, 21, 41),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
       ),
       body: FutureBuilder<String?>(
         future: _fetchProfilePicture(studentId),
@@ -221,10 +232,9 @@ class RequestDetailsPage extends StatelessWidget {
                 Center(
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: snapshot.hasData
-                        ? NetworkImage(snapshot.data!)
-                        : const AssetImage('assets/placeholder.jpg')
-                            as ImageProvider,
+                    backgroundImage: NetworkImage(
+                      snapshot.data ?? 'gs://cgas-2024.appspot.com/student_photos',
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -233,37 +243,47 @@ class RequestDetailsPage extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Register Number: ${studentInfo['registerNumber']}',
-                  style: const TextStyle(fontSize: 18, color: Colors.white70),
+                  style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 254, 254)),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Academic Year: ${studentInfo['academicYear']}',
-                  style: const TextStyle(fontSize: 18, color: Colors.white70),
+                  style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
                 ),
-                const Divider(height: 24, color: Colors.white30),
+                const Divider(height: 24, color: Color.fromARGB(141, 249, 249, 249)),
                 Text(
                   'Request Type: ${request['type']}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Reason: ${requestData['reason']}',
-                  style: const TextStyle(fontSize: 18, color: Colors.white70),
+                  style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Date: ${requestData['date']}',
+                  style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Time: ${requestData['time']}',
+                  style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Status: ${requestData['status']}',
-                  style: const TextStyle(fontSize: 18, color: Colors.white70),
+                  style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -272,33 +292,33 @@ class RequestDetailsPage extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         // Handle approve action
+                        _updateRequestStatus(requestId, 1); // Set status to 1 for approved
+                        Navigator.pop(context); // Close the details page
                       },
                       child: const Text(
                         'Approve',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 12),
-                        textStyle: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         // Handle reject action
+                        _updateRequestStatus(requestId, 2); // Set status to 2 for rejected
+                        Navigator.pop(context); // Close the details page
                       },
                       child: const Text(
                         'Reject',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 12),
-                        textStyle: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -308,8 +328,7 @@ class RequestDetailsPage extends StatelessWidget {
           );
         },
       ),
-      backgroundColor: const Color(0xFF041C32), // Dark background color
+      backgroundColor: const Color.fromARGB(255, 3, 21, 41),
     );
   }
 }
-
