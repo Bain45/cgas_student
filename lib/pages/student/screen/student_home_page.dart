@@ -1,6 +1,8 @@
+import 'package:cgas_official/pages/student/screen/qr_code.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({super.key});
@@ -49,17 +51,123 @@ class _StudentHomePageState extends State<StudentHomePage> {
     }
   }
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String getStatusText(int status) {
+    switch (status) {
+      case 0:
+        return 'Pending';
+      case 1:
+        return 'Approved by Teacher';
+      case 2:
+        return 'Rejected by Teacher';
+      case 3:
+        return 'Approved by HOD';
+      case 4:
+        return 'Rejected by HOD';
+      default:
+        return 'Unknown';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 4, 20, 44),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.all(8.0),
         children: [
           _buildProfileHeader(),
-          Expanded(
-            child: _buildMainContent(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              crossAxisSpacing: 12.0,
+              mainAxisSpacing: 12.0,
+              childAspectRatio: 1.1,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildCard(context, Icons.arrow_circle_down, 'INPASS', '/inpass'),
+                _buildCard(context, Icons.arrow_circle_up, 'OUTPASS', '/outpass'),
+              ],
+            ),
           ),
-          _buildTokenSection(context),
+          const Divider(color: Colors.white54),
+          StreamBuilder(
+            stream: CombineLatestStream.list([
+              _firestore.collection('inpass')
+                  .where('studentUid', isEqualTo: _auth.currentUser!.uid)
+                  .snapshots(),
+              _firestore.collection('outpass')
+                  .where('studentUid', isEqualTo: _auth.currentUser!.uid)
+                  .snapshots(),
+            ]),
+            builder: (context, AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text('An error occurred.'));
+              }
+
+              var allRequests = snapshot.data!
+                  .expand((collection) => collection.docs)
+                  .toList();
+
+              if (allRequests.isEmpty) {
+                return Center(child: Text('No requests found.', style: TextStyle(color: Colors.white70)));
+              }
+
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: allRequests.length,
+                itemBuilder: (context, index) {
+                  var request = allRequests[index];
+                  var action = request.reference.parent.id == 'inpass' ? 'INPASS' : 'OUTPASS';
+
+                  return Card(
+                    color: Colors.white10,
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      title: Text(request['reason'], style: TextStyle(color: Colors.white)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Date: ${request['date']}', style: TextStyle(color: Colors.white70)),
+                          Text('Time: ${request['time']}', style: TextStyle(color: Colors.white70)),
+                          Text('Status: ${getStatusText(request['status'])}', style: TextStyle(color: Colors.white70)),
+                        ],
+                      ),
+                      trailing: Text(
+                        action,
+                        style: TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold),
+                      ),
+                      onTap: () {
+                        // Check if the status is 3
+                        if (request['status'] == 3) {
+                          // Navigate to QrCodePage with the documentId and action
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => QrCodePage(
+                                documentId: request.id,
+                                action: action,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
         ],
       ),
     );
@@ -145,42 +253,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
-  Widget _buildMainContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.0,
-              mainAxisSpacing: 12.0,
-              children: [
-                _buildCard(context, Icons.arrow_circle_down, 'INPASS', '/inpass'),
-                _buildCard(context, Icons.arrow_circle_up, 'OUTPASS', '/outpass'),
-              ],
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(
-            'History',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-        ),
-        _buildHistorySection(),
-      ],
-    );
-  }
-
   Widget _buildCard(BuildContext context, IconData icon, String label, String routeName) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, routeName);
       },
       child: Card(
+
         color: const Color.fromARGB(255, 163, 234, 255),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -190,65 +269,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
             Text(
               label,
               style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHistorySection() {
-    return Expanded(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        children: [
-          _buildHistoryItem('Inpass Request - 01/08/2024', 'Approved'),
-          _buildHistoryItem('Outpass Request - 05/08/2024', 'Pending'),
-          _buildHistoryItem('Inpass Request - 10/08/2024', 'Denied'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHistoryItem(String title, String status) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 163, 234, 255),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.grey[300]!, width: 1.0),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-        ),
-        subtitle: Text('Status: $status', style: const TextStyle(fontSize: 14.0)),
-        trailing: const Text('1m ago', style: TextStyle(fontSize: 12.0)),
-        onTap: () {
-          print('Tapped on $title');
-        },
-      ),
-    );
-  }
-
-  Widget _buildTokenSection(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/tokens');
-      },
-      child: Container(
-        color: const Color.fromARGB(255, 163, 234, 255),
-        padding: const EdgeInsets.all(16.0),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.qr_code_2, color: Color.fromARGB(255, 4, 20, 44), size: 30.0),
-            SizedBox(width: 10.0),
-            Text(
-              'Tokens',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
           ],
         ),
