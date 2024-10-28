@@ -3,21 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StudentListPage extends StatelessWidget {
-  const StudentListPage({super.key});
+  final String facultyId; // Field to hold the facultyId
+
+  const StudentListPage({super.key, required this.facultyId}); // Constructor
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 3, 21, 41),
       appBar: AppBar(
-        title: const Text('Student List'),
+        backgroundColor: const Color.fromARGB(255, 3, 21, 41),
+        title: const Text('Student List',style: TextStyle(color: Colors.white,)),
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => StudentAddPage(),));
-          }, icon: Icon(Icons.add_reaction_outlined))
+          IconButton(
+            color: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StudentAddPage(facultyId: facultyId), // Pass facultyId to StudentAddPage
+                ),
+              );
+            },
+            icon: const Icon(Icons.add_circle_outline),
+          ),
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('students').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('students')
+            .where('facultyId', isEqualTo: facultyId) // Filter students by facultyId
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -27,7 +43,7 @@ class StudentListPage extends StatelessWidget {
             return const Center(child: Text('Error fetching students.'));
           }
 
-          final students = snapshot.data!.docs;
+          final students = snapshot.data?.docs ?? [];
 
           if (students.isEmpty) {
             return const Center(child: Text('No students added.'));
@@ -64,26 +80,39 @@ class StudentListPage extends StatelessWidget {
 
                   return Card(
                     margin: const EdgeInsets.all(8.0),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    color: const Color.fromARGB(255, 124, 213, 249), // Set row color here
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(student['imageUrl']),
                         radius: 30,
                         backgroundColor: Colors.grey[200],
                       ),
-                      title: Text(student['name']),
+                      title: Text(
+                        student['name'],
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 2, 2, 2), // Change text color for visibility
+                        ),
+                      ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Register Number: ${student['regnum']}'),
-                          Text('Email: ${student['email']}'),
-                          Text('Contact: ${student['contact']}'),
-                          Text('Gender: ${student['gender']}'),
-                          Text('DOB: ${student['dob']}'),
-                          Text('Academic Year: $academicYear'), // Display the academic year
+                          const SizedBox(height: 4),
+                          Text('Register Number: ${student['regnum']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                          Text('Email: ${student['email']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                          Text('Contact: ${student['contact']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                          Text('Gender: ${student['gender']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                          Text('DOB: ${student['dob']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+                          Text('Academic Year: $academicYear', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))), // Display the academic year
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Color.fromARGB(255, 3, 21, 41)), // Change icon color to white
                         onPressed: () async {
                           // Confirm before deletion
                           final confirmDelete = await showDialog<bool>(

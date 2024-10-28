@@ -48,7 +48,7 @@ class FacultyProfilePage extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 50,
                         backgroundImage: NetworkImage(
-                          userData['imageUrl'] ?? 'gs://cgas-2024.appspot.com/faculty_images',
+                          userData['imageUrl'] ?? '//cgas-2024.appspot.com/faculty_images',
                         ),
                         onBackgroundImageError: (_, __) => const Icon(
                           Icons.account_circle,
@@ -64,16 +64,6 @@ class FacultyProfilePage extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Text(
-                        'Register ID: ${userData['regnum'] ?? 'N/A'}',
-                        style: const TextStyle(
-                          fontSize: 16,
                           color: Colors.white,
                         ),
                       ),
@@ -106,9 +96,30 @@ class FacultyProfilePage extends StatelessWidget {
                             ),
                           ),
                         );
+                
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Email : ${userData['email'] ?? 'N/A'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Contact : ${userData['phone'] ?? 'N/A'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    
                   ],
                 );
               },

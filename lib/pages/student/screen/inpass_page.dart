@@ -57,12 +57,10 @@ class _InpassPageState extends State<InpassPage> {
       firstDate: DateTime(2021),
       lastDate: DateTime(2101),
     );
-    if (picked != null) {
-      setState(() {
-        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
+    setState(() {
+      _dateController.text = DateFormat('yyyy-MM-dd').format(picked!);
+    });
     }
-  }
 
   // Method to show time picker
   Future<void> _selectTime(BuildContext context) async {

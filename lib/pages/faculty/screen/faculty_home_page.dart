@@ -1,11 +1,10 @@
 import 'package:cgas_official/pages/faculty/screen/past_records_page.dart';
 import 'package:cgas_official/pages/faculty/screen/request_list.dart';
-import 'package:cgas_official/pages/faculty/screen/student_add.dart';
 import 'package:cgas_official/pages/faculty/screen/student_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'student_token.dart';
+//import 'student_token.dart';
 import 'faculty_profile_page.dart';
 
 class FacultyHomePage extends StatefulWidget {
@@ -18,7 +17,7 @@ class FacultyHomePage extends StatefulWidget {
 class _FacultyHomePageState extends State<FacultyHomePage> {
   int _currentIndex = 0;
   String name = 'Loading...';
-  String image = '';
+  String image = ''; // For faculty image
   final user = FirebaseAuth.instance.currentUser;
   List<Map<String, String>> students = []; 
   final firestore = FirebaseFirestore.instance;
@@ -44,7 +43,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         if (data != null) {
           setState(() {
             name = data['name'] ?? "No Name Available";
-            image = data['imageUrl'] ?? "";
+            image = data['imageUrl'] ?? ""; // Get the image URL
           });
         }
       }
@@ -56,17 +55,19 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   }
 
   Future<void> fetchStudents(String facultyId) async {
-    
     List<Map<String, String>> studentList = [];
-QuerySnapshot studsnapshot = await firestore.collection('students')
-          .where('facultyId', isEqualTo: facultyId)
-          .get();
+    
+    QuerySnapshot studsnapshot = await firestore.collection('students')
+        .where('facultyId', isEqualTo: facultyId)
+        .get();
 
-          for (var doc in studsnapshot.docs) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        
-      }
-
+    for (var doc in studsnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      studentList.add({
+        "name": data['studentName'] ?? "No Name",
+        "id": data['studentUid'] ?? "No ID",
+      });
+    }
 
     // Get students from inpass and outpass collections
     for (var collection in ['inpass', 'outpass']) {
@@ -88,23 +89,20 @@ QuerySnapshot studsnapshot = await firestore.collection('students')
     });
   }
 
-  Future<void> fetchPass(studId) async {
+  Future<void> fetchPass(String studId) async {
     try {
       for (var collection in ['inpass', 'outpass']) {
-      QuerySnapshot snapshot = await firestore.collection(collection)
-          .where('studentUid', isEqualTo: studId)
-          .get();
+        QuerySnapshot snapshot = await firestore.collection(collection)
+            .where('studentUid', isEqualTo: studId)
+            .get();
 
-      for (var doc in snapshot.docs) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        // studentList.add({
-        //   "name": data['studentName'] ?? "No Name",
-        //   "id": data['studentUid'] ?? "No ID",
-        // });
+        for (var doc in snapshot.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          // Process data as needed
+        }
       }
-    }
     } catch (e) {
-      
+      print("Error Fetching Pass Data: $e");
     }
   }
 
@@ -171,6 +169,13 @@ QuerySnapshot studsnapshot = await firestore.collection('students')
           Row(
             children: [
               const SizedBox(width: 13),
+              CircleAvatar(
+                radius: 30, // Adjust the size as needed
+                backgroundImage: image.isNotEmpty
+                    ? NetworkImage(image)
+                    : const AssetImage('assets/images/default_profile.png'), // Default image if none found
+              ),
+              const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -251,11 +256,11 @@ QuerySnapshot studsnapshot = await firestore.collection('students')
   Widget _screenItem(int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return CombinedRequestsPage();
+        return CombinedRequestsPage(); // Replace with your actual page
       case 1:
-        return const PastRecordsPage();
+        return const PastRecordsPage(); // Replace with your actual page
       case 2:
-        return const StudentListPage();
+        return const StudentListPage(facultyId: 'facultyId',); // Replace with your actual page
       default:
         return const Center(child: Text('Error'));
     }
@@ -302,34 +307,17 @@ QuerySnapshot studsnapshot = await firestore.collection('students')
                     ),
                   ),
                   subtitle: Text(
-                    "Reg No: ${students[index]["id"]}",
-                    style: const TextStyle(color: Colors.black54),
+                    "Reg No: ${students[index]["id"]!}",
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black54,
+                    ),
                   ),
-                  trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 28, 46, 99),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.arrow_forward),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StudentToken(
-                            studentName: students[index]["name"]!,
-                            studentId: students[index]["id"]!,
-                          ),
-                        ),
-                      );
+                      // Handle student approval
                     },
-                    child: const Text(
-                      'View',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                 ),
               );
