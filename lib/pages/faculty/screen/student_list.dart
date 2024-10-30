@@ -13,7 +13,10 @@ class StudentListPage extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 3, 21, 41),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 3, 21, 41),
-        title: const Text('Student List',style: TextStyle(color: Colors.white,)),
+        title: const Text(
+          'Student List',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             color: Colors.white,
@@ -103,12 +106,30 @@ class StudentListPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 4),
-                          Text('Register Number: ${student['regnum']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-                          Text('Email: ${student['email']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-                          Text('Contact: ${student['contact']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-                          Text('Gender: ${student['gender']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-                          Text('DOB: ${student['dob']}', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-                          Text('Academic Year: $academicYear', style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))), // Display the academic year
+                          Text(
+                            'Register Number: ${student['regnum']}',
+                            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          Text(
+                            'Email: ${student['email']}',
+                            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          Text(
+                            'Contact: ${student['contact']}',
+                            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          Text(
+                            'Gender: ${student['gender']}',
+                            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          Text(
+                            'DOB: ${student['dob']}',
+                            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          Text(
+                            'Academic Year: $academicYear',
+                            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Display the academic year
+                          ),
                         ],
                       ),
                       trailing: IconButton(

@@ -86,64 +86,85 @@ class _StudentAddPageState extends State<StudentAddPage> {
   }
 
   // Method to save student to Firestore
-  Future<void> _saveStudentToFirestore() async {
-    if (_formKey.currentState!.validate() && _selectedImage != null) {
-      try {
-        // Get the currently authenticated user
-        User? user = FirebaseAuth.instance.currentUser;
+Future<void> _saveStudentToFirestore() async {
+  if (_formKey.currentState!.validate() && _selectedImage != null) {
+    try {
+      // Get the currently authenticated user's UID as facultyId
+      String facultyId = FirebaseAuth.instance.currentUser!.uid;
 
-        if (user != null) {
-          // Use the passed facultyId
-          String facultyId = widget.facultyId; // Use the facultyId passed to the widget
+      // Fetch department ID based on facultyId
+      String departmentId = await _fetchDepartmentId(facultyId);
 
-          // Upload image to Firebase Storage and get the image URL
-          final storageRef = FirebaseStorage.instance.ref().child('student_photos/${_selectedImage!.name}');
-          await storageRef.putFile(File(_selectedImage!.path));
-          imageUrl = await storageRef.getDownloadURL();
+      // Upload image to Firebase Storage and get the image URL
+      final storageRef = FirebaseStorage.instance.ref().child('student_photos/${_selectedImage!.name}');
+      await storageRef.putFile(File(_selectedImage!.path));
+      imageUrl = await storageRef.getDownloadURL();
 
-          // Create the user in Firebase Auth and get the UID
-          UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: emailController.text,
-            password: passwordController.text,
-          );
+      // Create the user in Firebase Auth and get the UID
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
 
-          // Get the student UID
-          String studentUid = userCredential.user!.uid; // Get the student UID
+      // Get the student UID
+      String studentUid = userCredential.user!.uid; // Get the student UID
 
-          // Save additional details in Firestore under "students" collection
-          DocumentReference studentRef = FirebaseFirestore.instance.collection('students').doc(studentUid); // Use the student UID as the document ID
+      // Save additional details in Firestore under "students" collection
+      DocumentReference studentRef = FirebaseFirestore.instance.collection('students').doc(studentUid); // Use the student UID as the document ID
 
-          await studentRef.set({
-            'name': nameController.text,
-            'regnum': regnumController.text,
-            'email': emailController.text,
-            'contact': contactController.text,
-            'gender': _gender,
-            'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
-            'year': selectedYearId,
-            'imageUrl': imageUrl,
-            'facultyId': facultyId, // Use the passed faculty ID
-            'studentUid': studentUid, // Store the student UID
-          });
+      await studentRef.set({
+        'name': nameController.text,
+        'regnum': regnumController.text,
+        'email': emailController.text,
+        'contact': contactController.text,
+        'gender': _gender,
+        'dob': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+        'year': selectedYearId,
+        'imageUrl': imageUrl,
+        'facultyId': facultyId, // Store the faculty ID
+        'studentUid': studentUid, // Store the student UID
+        'departmentId': departmentId, // Store the department ID
+      });
 
-          // Success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Student added successfully!')),
-          );
-          Navigator.pop(context);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User not authenticated.')),
-          );
-        }
-      } catch (e) {
-        print(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to add student.')),
-        );
-      }
+      // Success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Student added successfully!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to add student.')),
+      );
     }
   }
+}
+
+// Method to fetch department ID based on faculty ID
+Future<String> _fetchDepartmentId(String facultyId) async {
+  try {
+    final docSnapshot = await FirebaseFirestore.instance.collection('faculty').doc(facultyId).get();
+
+    if (docSnapshot.exists) {
+      // Assuming the departmentId is stored as a field in the faculty document
+      return docSnapshot['departmentId']; // Adjust the key if necessary
+    } else {
+      throw Exception("Faculty document does not exist for the given faculty ID");
+    }
+  } catch (e) {
+    print("Error fetching department ID: $e");
+    Fluttertoast.showToast(
+      msg: "Error fetching department ID",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+    );
+    rethrow; // Rethrow the exception for further handling if needed
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -424,4 +445,4 @@ class _StudentAddPageState extends State<StudentAddPage> {
       ),
     );
   }
-}
+} 
