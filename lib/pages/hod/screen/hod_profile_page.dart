@@ -48,7 +48,7 @@ class HodProfilePage extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 50,
                         backgroundImage: NetworkImage(
-                          userData['imageUrl'] ?? 'gs://cgas-2024.appspot.com/hod_images',
+                          userData['imageUrl'] ?? '//cgas-2024.appspot.com/hod_images',
                         ),
                         onBackgroundImageError: (_, __) => const Icon(
                           Icons.account_circle,

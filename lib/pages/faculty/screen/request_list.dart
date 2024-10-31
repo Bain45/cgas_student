@@ -60,7 +60,7 @@ class _CombinedRequestsPageState extends State<CombinedRequestsPage> {
           'studentInfo': {
             'name': studentDoc.data()?['name'] ?? 'No Name',
             'registerNumber': studentDoc.data()?['regnum'] ?? 'N/A',
-            'academicYear': academicYearDoc.data()?['academicyear'] ?? 'N/A',
+            'academicYear': academicYearDoc.data()?['academicYear'] ?? 'N/A',
           },
           'id': doc.id,
         });
