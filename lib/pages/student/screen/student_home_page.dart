@@ -74,7 +74,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 4, 20, 44),
+      backgroundColor: const Color.fromARGB(255, 3, 21, 41),
       body: ListView(
         padding: const EdgeInsets.all(8.0),
         children: [
@@ -94,7 +94,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               ],
             ),
           ),
-          const Divider(color: Colors.white54),
+          const Divider(color: Color.fromARGB(137, 83, 190, 240)),
           StreamBuilder(
             stream: CombineLatestStream.list([
               _firestore.collection('inpass')
@@ -130,21 +130,21 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   var action = request.reference.parent.id == 'inpass' ? 'INPASS' : 'OUTPASS';
 
                   return Card(
-                    color: Colors.white10,
+                    color: const Color.fromARGB(255, 124, 213, 249),
                     margin: EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
-                      title: Text(request['reason'], style: TextStyle(color: Colors.white)),
+                      title: Text(request['reason'], style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold)),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Date: ${request['date']}', style: TextStyle(color: Colors.white70)),
-                          Text('Time: ${request['time']}', style: TextStyle(color: Colors.white70)),
-                          Text('Status: ${getStatusText(request['status'])}', style: TextStyle(color: Colors.white70)),
+                          Text('Date: ${request['date']}', style: TextStyle(color: const Color.fromARGB(179, 0, 0, 0),fontWeight: FontWeight.bold)),
+                          Text('Time: ${request['time']}', style: TextStyle(color: const Color.fromARGB(179, 0, 0, 0),fontWeight: FontWeight.bold)),
+                          Text('Status: ${getStatusText(request['status'])}', style: TextStyle(color: const Color.fromARGB(151, 172, 10, 7),fontWeight: FontWeight.bold)),
                         ],
                       ),
                       trailing: Text(
                         action,
-                        style: TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0), fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       onTap: () {
                         // Check if the status is 3
@@ -180,7 +180,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.account_circle_rounded, color: Colors.white, size: 30.0),
+            icon: const Icon(Icons.account_circle_rounded, color: Color.fromARGB(255, 124, 213, 249), size: 30.0),
             onPressed: () {
               Navigator.pushNamed(context, '/myprofile');
             },
@@ -191,7 +191,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               const Text(
                 'CGAS',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 124, 213, 249),
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -200,12 +200,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 children: [
                   const Text(
                     'Welcome, ',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(color: Color.fromARGB(255, 124, 213, 249), fontSize: 14),
                   ),
                   Text(
                     name,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 124, 213, 249),
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -215,7 +215,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.exit_to_app_sharp, color: Colors.white, size: 30.0),
+            icon: const Icon(Icons.exit_to_app_sharp, color: Color.fromARGB(255, 124, 213, 249), size: 30.0),
             onPressed: () {
               _showLogoutConfirmationDialog(context);
             },
@@ -260,11 +260,11 @@ class _StudentHomePageState extends State<StudentHomePage> {
       },
       child: Card(
 
-        color: const Color.fromARGB(255, 163, 234, 255),
+        color: const Color.fromARGB(255, 124, 213, 249),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 80.0, color: const Color.fromARGB(255, 4, 20, 44)),
+            Icon(icon, size: 80.0, color: const Color.fromARGB(255, 3, 21, 41)),
             const SizedBox(height: 8.0),
             Text(
               label,

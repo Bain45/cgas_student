@@ -139,9 +139,9 @@ class _OutpassPageState extends State<OutpassPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 4, 20, 44),
       appBar: AppBar(
-        title: const Text('Outpass Request', style: TextStyle(color: Colors.white)),
+        title: const Text('Outpass Request', style: TextStyle(color: Color.fromARGB(255, 124, 213, 249))),
         backgroundColor: const Color.fromARGB(255, 4, 20, 44),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 124, 213, 249)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -154,7 +154,7 @@ class _OutpassPageState extends State<OutpassPage> {
                 Container(
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 163, 234, 255),
+                    color: const Color.fromARGB(255, 124, 213, 249),
                     borderRadius: BorderRadius.circular(15.0),
                     boxShadow: [
                       BoxShadow(
@@ -191,7 +191,7 @@ class _OutpassPageState extends State<OutpassPage> {
                 Container(
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 163, 234, 255),
+                    color: const Color.fromARGB(255, 124, 213, 249),
                     borderRadius: BorderRadius.circular(15.0),
                     boxShadow: [
                       BoxShadow(
@@ -228,7 +228,7 @@ class _OutpassPageState extends State<OutpassPage> {
                 Container(
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 163, 234, 255),
+                    color: const Color.fromARGB(255, 124, 213, 249),
                     borderRadius: BorderRadius.circular(15.0),
                     boxShadow: [
                       BoxShadow(
@@ -261,7 +261,7 @@ class _OutpassPageState extends State<OutpassPage> {
                   onPressed: _submitOutpassRequest,
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        const Color.fromARGB(255, 163, 234, 255),
+                        const Color.fromARGB(255, 124, 213, 249),
                     padding: const EdgeInsets.symmetric(
                         vertical: 15, horizontal: 30),
                     textStyle: const TextStyle(

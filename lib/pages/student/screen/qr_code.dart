@@ -26,7 +26,7 @@ class QrCodePage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(onPressed: (){
           Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back_ios_new_rounded, color: const Color.fromARGB(255, 196, 171, 255),)),
+        }, icon: Icon(Icons.arrow_back_ios_new_rounded, color: const Color.fromARGB(255, 124, 213, 249),)),
         backgroundColor: Color.fromARGB(255, 4, 20, 44),
       ),
       body: Container(
@@ -36,7 +36,7 @@ class QrCodePage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             
-            colors: [Color.fromARGB(255, 4, 20, 44), const Color.fromARGB(255, 69, 36, 128)],
+            colors: [Color.fromARGB(255, 4, 20, 44), const Color.fromARGB(255, 124, 213, 249)],
           ),
         ),
         child: Column(
@@ -47,7 +47,7 @@ class QrCodePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 196, 171, 255),
+                      color: const Color.fromARGB(255, 124, 213, 249),
                     ),
                   ),
                   SizedBox(height: 10),

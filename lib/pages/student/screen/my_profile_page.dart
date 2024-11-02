@@ -15,10 +15,10 @@ class MyProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Profile',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color.fromARGB(255, 124, 213, 249)),
         ),
         backgroundColor: const Color.fromARGB(255, 3, 21, 41),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 124, 213, 249)),
       ),
       body: user != null
           ? StreamBuilder<DocumentSnapshot>(
@@ -53,7 +53,7 @@ class MyProfilePage extends StatelessWidget {
                         onBackgroundImageError: (_, __) => const Icon(
                           Icons.account_circle,
                           size: 50,
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 124, 213, 249),
                         ),
                       ),
                     ),
@@ -64,7 +64,7 @@ class MyProfilePage extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 124, 213, 249),
                         ),
                       ),
                     ),
@@ -92,7 +92,7 @@ class MyProfilePage extends StatelessWidget {
                             'Department: ${departmentData['department'] ?? 'N/A'}', // Change 'department' to the appropriate field in your department document
                             style: const TextStyle(
                               fontSize: 16,
-                              color: Colors.white,
+                              color: Color.fromARGB(255, 124, 213, 249),
                             ),
                           ),
                         );
@@ -104,7 +104,7 @@ class MyProfilePage extends StatelessWidget {
                         'Register Number: ${userData['regnum'] ?? 'N/A'}',
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 124, 213, 249),
                         ),
                       ),
                     ), 
@@ -114,7 +114,7 @@ class MyProfilePage extends StatelessWidget {
                         'Phone Number: ${userData['contact'] ?? 'N/A'}',
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 124, 213, 249),
                         ),
                       ),
                     ),
@@ -124,7 +124,7 @@ class MyProfilePage extends StatelessWidget {
                         'Email Id: ${userData['email'] ?? 'N/A'}',
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 124, 213, 249),
                         ),
                       ),
                     ),
